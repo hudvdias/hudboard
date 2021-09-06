@@ -1,11 +1,13 @@
-import { extendTheme } from "@chakra-ui/react";
+import { extendTheme, ThemeConfig } from "@chakra-ui/react";
+
+const config: ThemeConfig = {
+  initialColorMode: "dark",
+};
 
 export const theme = extendTheme({
-  config: {
-    initialColorMode: 'dark',
-  },
+  config,
   fonts: {
-    body: "Montserrat, sans-serif",
-    heading: "Montserrat, sans-serif",
+    body: 'Montserrat, sans-serif',
+    heading: 'Montserrat, sans-serif',
   }
 });

@@ -3,8 +3,8 @@ import { Button, Flex, Heading } from "@chakra-ui/react";
 export function Header() {
   return (
     <Flex
-      min-height="80px"
-      height="80px"
+      height="104px"
+      minHeight="104px"
       width="100%"
       paddingX="24px"
       alignItems="center"
