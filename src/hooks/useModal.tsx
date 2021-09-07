@@ -5,6 +5,7 @@ import { IProviderProps } from "./AppProvider";
 
 interface IModalContextProps {
   isStartModalOpen: boolean,
+  isCardModalOpen: boolean,
   toggleModal: ({ modal }: IOpenModalProps) => void,
 };
 
@@ -16,20 +17,23 @@ const ModalContext = createContext<IModalContextProps>({} as IModalContextProps)
 
 export function ModalProvider({ children }: IProviderProps) {
   const [ isStartModalOpen, setIsStartModalOpen ] = useState(false);
+  const [ isCardModalOpen, setIsCardModalOpen ] = useState(false);
 
   function toggleModal({ modal }: IOpenModalProps) {
     if (modal === 'start') {
       setIsStartModalOpen(!isStartModalOpen);
     };
     if (modal === 'card') {
-      return;
-    }
+      setIsCardModalOpen(!isCardModalOpen);
+    };
+    return;
   };
 
   return (
     <ModalContext.Provider
       value={{
         isStartModalOpen,
+        isCardModalOpen,
         toggleModal,
       }}
     >

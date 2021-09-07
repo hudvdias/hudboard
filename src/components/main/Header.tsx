@@ -1,8 +1,10 @@
 import { Button, Flex, Heading } from "@chakra-ui/react";
 import { useBoard } from "../../hooks/useBoard";
+import { useModal } from "../../hooks/useModal";
 
 export function Header() {
   const { board } = useBoard();
+  const { toggleModal } = useModal();
 
   return (
     <Flex
@@ -19,6 +21,7 @@ export function Header() {
         marginLeft="24px"
         size="sm"
         colorScheme="blue"
+        onClick={() => toggleModal({ modal: 'card' })}
       >
         + Add Card
       </Button>
