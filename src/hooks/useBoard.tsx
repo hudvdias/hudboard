@@ -17,27 +17,22 @@ const initialStatuses = [
   {
     title: 'draft',
     color: 'gray',
-    step: 1,
   },
   {
     title: 'ready',
     color: 'yellow',
-    step: 2,
   },
   {
     title: 'pending',
     color: 'orange',
-    step: 3,
   },
   {
     title: 'in progress',
     color: 'red',
-    step: 4,
   },
   {
     title: 'completed',
     color: 'green',
-    step: 5,
   },
 ];
 
