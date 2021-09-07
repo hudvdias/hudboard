@@ -1,6 +1,11 @@
 import { Flex, Tag, Text } from "@chakra-ui/react";
+import { IStatus } from "../../types/IBoard";
 
-export function ColumnHeader() {
+interface IColumnHeaderProps {
+  status: IStatus,
+}
+
+export function ColumnHeader({ status }: IColumnHeaderProps) {
   return (
     <Flex
       height="40px"
@@ -8,19 +13,20 @@ export function ColumnHeader() {
       justifyContent="space-between"
       alignItems="center"
       borderRadius="md"
-      background="gray.500"
+      background={`${status.color}.500`}
       dropShadow="lg"
     >
       <Text
         fontSize="14px"
         fontWeight="600"
+        textTransform="capitalize"
       >
-        Status
+        {status.title}
       </Text>
       <Tag
         size="sm"
       >
-        2
+        {status.cardsIds.length}
       </Tag>
     </Flex>
   );

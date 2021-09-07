@@ -1,6 +1,9 @@
 import { Button, Flex, Heading } from "@chakra-ui/react";
+import { useBoard } from "../../hooks/useBoard";
 
 export function Header() {
+  const { board } = useBoard();
+
   return (
     <Flex
       height="104px"
@@ -10,7 +13,7 @@ export function Header() {
       alignItems="center"
     >
       <Heading>
-        Board
+        {board.name}
       </Heading>
       <Button
         marginLeft="24px"

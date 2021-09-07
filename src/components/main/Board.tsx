@@ -1,7 +1,10 @@
 import { Grid } from "@chakra-ui/react";
+import { useBoard } from "../../hooks/useBoard";
 import { Column } from "./Column";
 
 export function Board() {
+  const { statuses } = useBoard();
+
   return (
     <Grid
       width="100%"
@@ -10,7 +13,9 @@ export function Board() {
       paddingX="24px"
       gap="24px"
     >
-      <Column />
+      {statuses.map((status) => (
+        <Column status={status} />
+      ))}
     </Grid>
   );
 };

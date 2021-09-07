@@ -1,12 +1,17 @@
 import { Flex } from "@chakra-ui/react";
+import { IStatus } from "../../types/IBoard";
 import { ColumnHeader } from "../ui/ColumnHeader";
 
-export function Column() {
+interface IColumnProps {
+  status: IStatus,
+}
+
+export function Column({ status }: IColumnProps) {
   return (
     <Flex
       flexDirection="column"
     >
-      <ColumnHeader />
+      <ColumnHeader status={status} />
     </Flex>
   );
 };
