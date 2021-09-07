@@ -3,6 +3,7 @@ import { Flex } from "@chakra-ui/react";
 import { AppProvider } from "../hooks/AppProvider";
 import { Header } from "../components/main/Header";
 import { Board } from "../components/main/Board";
+import { StartModal } from "../components/modals/StartModal";
 
 export function App() {
   return (
@@ -12,6 +13,7 @@ export function App() {
         width="100vw"
         flexDirection="column"
       >
+        <StartModal />
         <Header />
         <Board />
       </Flex>

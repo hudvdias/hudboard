@@ -2,6 +2,7 @@ import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { theme } from "../styles/theme";
 import { BoardProvider } from "./useBoard";
+import { ModalProvider } from "./useModal";
 
 export interface IProviderProps {
   children: React.ReactNode,
@@ -10,9 +11,11 @@ export interface IProviderProps {
 export function AppProvider({ children }: IProviderProps) {
   return (
     <ChakraProvider theme={theme}>
-      <BoardProvider>
-        {children}
-      </BoardProvider>
+      <ModalProvider>
+        <BoardProvider>
+          {children}
+        </BoardProvider>
+      </ModalProvider>
     </ChakraProvider>
   );
 };

@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from "react";
 import { v4 } from "uuid";
 import { IBoard, IStatus } from "../types/IBoard";
 import { IProviderProps } from "./AppProvider";
+import { useModal } from "./useModal";
 
 interface IBoardContextProps {
   board: IBoard,
@@ -44,15 +45,19 @@ export function BoardProvider({ children }: IProviderProps) {
   const [board, setBoard] = useState<IBoard>({} as IBoard);
   const [statuses, setStatuses] = useState<IStatus[]>([]);
 
+  const { toggleModal } = useModal();
+
   useEffect(() => {
     const localBoard = localStorage.getItem('@hudboard:board');
     const localStatuses = localStorage.getItem('@hudboard:statuses');
     if (!localBoard || !localStatuses) {
-      createBoard('LocalBoard');
+      toggleModal({ modal: 'start' });
       return;
     };
     setBoard(JSON.parse(localBoard));
     setStatuses(JSON.parse(localStatuses));
+    // This is a one-time-run function
+    // eslint-disable-next-line
   }, []);
 
   function createBoard(name: string) {
