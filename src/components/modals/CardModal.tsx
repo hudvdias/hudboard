@@ -25,7 +25,7 @@ export function CardModal() {
   const [titleError, setTitleError] = useState(false);
 
   const { isCardModalOpen, toggleModal } = useModal();
-  const { statuses } = useBoard();
+  const { statuses, createCard } = useBoard();
 
   useEffect(() => {
     const newCard = {
@@ -88,14 +88,27 @@ export function CardModal() {
     setTasks(newTasks);
   };
 
+  function resetModal() {
+    const newCard = {
+      id: v4(),
+      title: '',
+      statusId: statuses[0]?.id,
+      tasksIds: [],
+    }
+    setCard(newCard);
+    setTasks([]);
+  };
+
   function handleCreateCard() {
     if (!card.title) {
       setTitleError(true);
       return;
     }
     setTitleError(false);
-    console.log(card);
-    console.log(tasks);
+    createCard(card, tasks);
+    resetModal();
+    toggleModal({ modal: 'card' });
+    return;
   };
 
   return (

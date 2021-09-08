@@ -1,14 +1,18 @@
 import { useEffect } from "react";
 import { createContext, useContext, useState } from "react";
 import { v4 } from "uuid";
-import { IBoard, IStatus } from "../types/IBoard";
+import { IBoard, ICard, IStatus, ITask } from "../types/IBoard";
 import { IProviderProps } from "./AppProvider";
 import { useModal } from "./useModal";
 
 interface IBoardContextProps {
   board: IBoard,
   statuses: IStatus[],
+  cards: ICard[],
+  tasks: ITask[],
   createBoard: (name: string) => void;
+  createCard: (card: ICard, tasks: ITask[]) => void;
+  toggleTask: (id: string) => void;
 };
 
 const BoardContext = createContext<IBoardContextProps>({} as IBoardContextProps);
@@ -39,6 +43,8 @@ const initialStatuses = [
 export function BoardProvider({ children }: IProviderProps) {
   const [board, setBoard] = useState<IBoard>({} as IBoard);
   const [statuses, setStatuses] = useState<IStatus[]>([]);
+  const [cards, setCards] = useState<ICard[]>([]);
+  const [tasks, setTasks] = useState<ITask[]>([]);
 
   const { toggleModal } = useModal();
 
@@ -51,7 +57,15 @@ export function BoardProvider({ children }: IProviderProps) {
     };
     setBoard(JSON.parse(localBoard));
     setStatuses(JSON.parse(localStatuses));
-    // This is a one-time-run function
+    const localCards = localStorage.getItem('@hudboard:cards');
+    const localTasks = localStorage.getItem('@hudboard:tasks');
+    if (localCards) {
+      setCards(JSON.parse(localCards));
+    }
+    if (localTasks) {
+      setTasks(JSON.parse(localTasks));
+    }
+    return;
     // eslint-disable-next-line
   }, []);
 
@@ -75,10 +89,38 @@ export function BoardProvider({ children }: IProviderProps) {
     };
     setBoard(newBoard);
     setStatuses(newStatuses);
-    localStorage.setItem('@hudboard:id', boardId);
     localStorage.setItem('@hudboard:board', JSON.stringify(newBoard));
     localStorage.setItem('@hudboard:statuses', JSON.stringify(newStatuses));
     return boardId;
+  };
+
+  function createCard(card: ICard, myTasks: ITask[]) {
+    const newStatuses = statuses.map((status) => {
+      if (status.id === card.statusId) {
+        status.cardsIds.push(card.id);
+      }
+      return status;
+    });
+    const newCards = [ ...cards, card ];
+    const newTasks = [ ...tasks, ...myTasks ]
+    setStatuses(newStatuses);
+    setCards(newCards);
+    setTasks(newTasks);
+    localStorage.setItem('@hudboard:statuses', JSON.stringify(newStatuses));
+    localStorage.setItem('@hudboard:cards', JSON.stringify(newCards));
+    localStorage.setItem('@hudboard:tasks', JSON.stringify(newTasks));
+  };
+
+  function toggleTask(id: string) {
+    const newTasks = tasks.map((task) => {
+      if (task.id === id) {
+        task.isDone = !task.isDone;
+      };
+      return task;
+    });
+    setTasks(newTasks);
+    localStorage.setItem('@hudboard:tasks', JSON.stringify(newTasks));
+    return;
   };
 
   return (
@@ -86,7 +128,11 @@ export function BoardProvider({ children }: IProviderProps) {
       value={{
         board,
         statuses,
+        cards,
+        tasks,
         createBoard,
+        createCard,
+        toggleTask,
       }}
     >
       {children}
