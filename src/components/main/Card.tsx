@@ -40,9 +40,12 @@ export function Card({ card }: ICardProps) {
             display="flex"
             alignItems="center"
             justifyContent="space-between"
-            height="48px"
+            padding="16px"
           >
-            <Text>
+            <Text
+              width="100%"
+              textAlign="left"
+            >
               {card.title}
             </Text>
             <AccordionIcon />
@@ -50,6 +53,7 @@ export function Card({ card }: ICardProps) {
           <AccordionPanel>
             <Stack
               spacing="0"
+              marginBottom={cardTasks.length > 0 ? '16px' : '0'}
             >
               {cardTasks.map((task) => (
                 <Checkbox
@@ -70,7 +74,6 @@ export function Card({ card }: ICardProps) {
               aria-label="Edit Card"
               icon={<EditIcon />}
               size="xs"
-              marginTop="16px"
               onClick={() => toggleEditCardModal(card.id)}
             />
           </AccordionPanel>

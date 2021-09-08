@@ -30,6 +30,7 @@ export function Column({ status }: IColumnProps) {
       <Stack
         marginTop="16px"
         spacing="16px"
+        height="100%"
       >
         {statusCards.map((card) => (
           <Card card={card} key={card.id} />
