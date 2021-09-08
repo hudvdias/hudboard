@@ -23,5 +23,5 @@ export interface ITask {
   id: string,
   cardId: string,
   title: string,
-  completed: boolean,
+  isDone: boolean,
 };

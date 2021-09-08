@@ -1,5 +1,5 @@
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-import { Button, Checkbox, FormControl, FormLabel, Grid, HStack, IconButton, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack } from "@chakra-ui/react";
+import { DeleteIcon } from "@chakra-ui/icons";
+import { Button, Checkbox, FormControl, FormErrorMessage, FormLabel, Grid, HStack, IconButton, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { v4 } from "uuid";
@@ -8,9 +8,21 @@ import { useBoard } from "../../hooks/useBoard";
 import { useModal } from "../../hooks/useModal";
 import { ICard, ITask } from "../../types/IBoard";
 
+interface IEditCardProps {
+  title?: string,
+  statusId?: string,
+};
+
+interface IEditTaskProps {
+  id: string,
+  title?: string,
+  isDone?: boolean,
+};
+
 export function CardModal() {
   const [card, setCard] = useState({} as ICard);
   const [tasks, setTasks] = useState<ITask[]>([]);
+  const [titleError, setTitleError] = useState(false);
 
   const { isCardModalOpen, toggleModal } = useModal();
   const { statuses } = useBoard();
@@ -25,8 +37,65 @@ export function CardModal() {
     setCard(newCard);
   }, [statuses]);
 
+  function handleEditCard({ title, statusId }: IEditCardProps) {
+    const newCard = {
+      ...card,
+      title: title ? title : card.title,
+      statusId: statusId ? statusId : card.statusId,
+    };
+    setCard(newCard);
+  };
+
+  function handleAddTask() {
+    const newTask = {
+      id: v4(),
+      cardId: card.id,
+      title: '',
+      isDone: false,
+    };
+    const newTasks = [...tasks, newTask];
+    setTasks(newTasks);
+    const newCard = {
+      ...card,
+      cardsIds: card.tasksIds.push(newTask.id),
+    };
+    setCard(newCard);
+  };
+
+  function handleRemoveTask(id: string) {
+    const newTasks = tasks.filter((task) => {
+      return task.id !== id;
+    });
+    setTasks(newTasks);
+  };
+
+  function handleEditTask({ id, title, isDone }: IEditTaskProps) {
+    const myTask = tasks.find((task) => {
+      return task.id === id;
+    });
+    if (!myTask) return;
+    const newTask = {
+      ...myTask,
+      title: title ? title : myTask.title,
+      isDone: isDone ? isDone : myTask.isDone,
+    };
+    const newTasks = tasks.map((task) => {
+      if (task.id === id) {
+        return newTask;
+      };
+      return task;
+    });
+    setTasks(newTasks);
+  };
+
   function handleCreateCard() {
+    if (!card.title) {
+      setTitleError(true);
+      return;
+    }
+    setTitleError(false);
     console.log(card);
+    console.log(tasks);
   };
 
   return (
@@ -54,6 +123,7 @@ export function CardModal() {
             >
               <FormControl
                 isRequired
+                isInvalid={titleError}
               >
                 <FormLabel>
                   Title
@@ -62,7 +132,12 @@ export function CardModal() {
                   placeholder="Card Title"
                   variant="filled"
                   autoFocus
+                  value={card.title}
+                  onChange={(event) => handleEditCard({ title: event.target.value })}
                 />
+                <FormErrorMessage>
+                  Card needs a title.
+                </FormErrorMessage>
               </FormControl>
               <FormControl
                 isRequired
@@ -73,6 +148,8 @@ export function CardModal() {
                 <Select
                   variant="filled"
                   textTransform="capitalize"
+                  value={card.statusId}
+                  onChange={(event) => handleEditCard({ statusId: event.currentTarget.value })}
                 >
                   {statuses.map((status) => (
                     <option
@@ -99,30 +176,28 @@ export function CardModal() {
                   >
                     <Checkbox
                       colorScheme="green"
+                      isChecked={task.isDone}
+                      onChange={() => handleEditTask({ id: task.id, isDone: !task.isDone })}
                     />
                     <Input
                       variant="filled"
                       placeholder="Task"
                       size="sm"
-                    />
-                    <IconButton
-                      size="xs"
-                      aria-label="Add Subtask"
-                      icon={<AddIcon />}
-                      onClick={() => {}}
+                      value={task.title}
+                      onChange={(event) => handleEditTask({ id: task.id, title: event.target.value })}
                     />
                     <IconButton
                       size="xs"
                       aria-label="Remove Task"
                       icon={<DeleteIcon />}
-                      onClick={() => {}}
+                      onClick={() => handleRemoveTask(task.id)}
                     />
                   </HStack>
                 ))}
               </Stack>
               <Button
                 size="sm"
-                onClick={() => {}}
+                onClick={() => handleAddTask()}
               >
                 + Add Task
               </Button>
