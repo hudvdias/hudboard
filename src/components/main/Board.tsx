@@ -14,7 +14,10 @@ export function Board() {
       gap="24px"
     >
       {statuses.map((status) => (
-        <Column status={status} />
+        <Column
+          status={status}
+          key={status.id}
+        />
       ))}
     </Grid>
   );

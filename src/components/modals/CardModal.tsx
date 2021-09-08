@@ -19,7 +19,7 @@ export function CardModal() {
     const newCard = {
       id: v4(),
       title: '',
-      statusId: statuses[0].id,
+      statusId: statuses[0]?.id,
       tasksIds: [],
     }
     setCard(newCard);
@@ -77,6 +77,7 @@ export function CardModal() {
                   {statuses.map((status) => (
                     <option
                       value={status.id}
+                      key={status.id}
                     >
                       {status.title}
                     </option>
@@ -94,6 +95,7 @@ export function CardModal() {
                 {tasks.map((task) => (
                   <HStack
                     spacing="8px"
+                    key={task.id}
                   >
                     <Checkbox
                       colorScheme="green"
