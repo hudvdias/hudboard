@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createContext, useContext, useState } from "react";
 import { v4 } from "uuid";
+import { initialStatuses } from "../data/statuses";
 import { IBoard, ICard, IStatus, ITask } from "../types/IBoard";
 import { IProviderProps } from "./AppProvider";
 import { useModal } from "./useModal";
@@ -12,33 +13,12 @@ interface IBoardContextProps {
   tasks: ITask[],
   createBoard: (name: string) => void,
   createCard: (card: ICard, tasks: ITask[]) => void,
+  editCard: (card: ICard, tasks: ITask[]) => void,
+  deleteCard: (id: string) => void;
   toggleTask: (id: string) => void,
 };
 
 const BoardContext = createContext<IBoardContextProps>({} as IBoardContextProps);
-
-const initialStatuses = [
-  {
-    title: 'draft',
-    color: 'gray',
-  },
-  {
-    title: 'ready',
-    color: 'yellow',
-  },
-  {
-    title: 'pending',
-    color: 'orange',
-  },
-  {
-    title: 'in progress',
-    color: 'red',
-  },
-  {
-    title: 'completed',
-    color: 'green',
-  },
-];
 
 export function BoardProvider({ children }: IProviderProps) {
   const [board, setBoard] = useState<IBoard>({} as IBoard);
@@ -91,7 +71,7 @@ export function BoardProvider({ children }: IProviderProps) {
     setStatuses(newStatuses);
     localStorage.setItem('@hudboard:board', JSON.stringify(newBoard));
     localStorage.setItem('@hudboard:statuses', JSON.stringify(newStatuses));
-    return boardId;
+    return;
   };
 
   function createCard(card: ICard, myTasks: ITask[]) {
@@ -109,6 +89,7 @@ export function BoardProvider({ children }: IProviderProps) {
     localStorage.setItem('@hudboard:statuses', JSON.stringify(newStatuses));
     localStorage.setItem('@hudboard:cards', JSON.stringify(newCards));
     localStorage.setItem('@hudboard:tasks', JSON.stringify(newTasks));
+    return;
   };
 
   function toggleTask(id: string) {
@@ -123,6 +104,69 @@ export function BoardProvider({ children }: IProviderProps) {
     return;
   };
 
+  function editCard(myCard: ICard, myTasks: ITask[]) {
+    const newStatuses = statuses.map((status) => {
+      if (status.cardsIds.includes(myCard.id)) {
+        if (status.id === myCard.statusId) {
+          return status;
+        };
+        const newCardsIds = status.cardsIds.filter((cardId) => {
+          return cardId !== myCard.id;
+        });
+        return {
+          ...status,
+          cardsIds: newCardsIds,
+        };
+      };
+      if (status.id === myCard.statusId) {
+        status.cardsIds.push(myCard.id);
+      }
+      return status;
+    });
+    const newCards = cards.map((card) => {
+      if (card.id === myCard.id) {
+        return myCard;
+      };
+      return card;
+    });
+    const filteredTasks = tasks.filter((task) => {
+      return task.cardId !== myCard.id;
+    });
+    const newTasks = [ ...filteredTasks, ...myTasks ]
+    setStatuses(newStatuses);
+    setCards(newCards);
+    setTasks(newTasks);
+    localStorage.setItem('@hudboard:statuses', JSON.stringify(newStatuses));
+    localStorage.setItem('@hudboard:cards', JSON.stringify(newCards));
+    localStorage.setItem('@hudboard:tasks', JSON.stringify(newTasks));
+    return;
+  };
+
+  function deleteCard(id: string) {
+    const newStatuses = statuses.map((status) => {
+      const newCardsIds = status.cardsIds.filter((cardId) => {
+        return cardId !== id;
+      });
+      return {
+        ...status,
+        cardsIds: newCardsIds,
+      };
+    });
+    const newCards = cards.filter((card) => {
+      return card.id !== id;
+    });
+    const newTasks = tasks.filter((task) => {
+      return task.cardId !== id;
+    });
+    setStatuses(newStatuses);
+    setCards(newCards);
+    setTasks(newTasks);
+    localStorage.setItem('@hudboard:statuses', JSON.stringify(newStatuses));
+    localStorage.setItem('@hudboard:cards', JSON.stringify(newCards));
+    localStorage.setItem('@hudboard:tasks', JSON.stringify(newTasks));
+    return;
+  };
+
   return (
     <BoardContext.Provider
       value={{
@@ -132,6 +176,8 @@ export function BoardProvider({ children }: IProviderProps) {
         tasks,
         createBoard,
         createCard,
+        editCard,
+        deleteCard,
         toggleTask,
       }}
     >

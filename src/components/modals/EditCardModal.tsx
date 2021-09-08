@@ -25,7 +25,7 @@ export function EditCardModal() {
   const [titleError, setTitleError] = useState(false);
 
   const { isEditCardModalOpen, toggleEditCardModal, editCardId } = useModal();
-  const { statuses, cards, tasks } = useBoard();
+  const { statuses, cards, tasks, editCard, deleteCard } = useBoard();
 
   useEffect(() => {
     const myCard = cards.find((card) => {
@@ -101,7 +101,14 @@ export function EditCardModal() {
       return;
     }
     setTitleError(false);
-    console.log(card, tasks);
+    editCard(card, cardTasks);
+    resetModal();
+    toggleEditCardModal();
+    return;
+  };
+
+  function handleDeleteCard() {
+    deleteCard(card.id);
     resetModal();
     toggleEditCardModal();
     return;
@@ -215,10 +222,11 @@ export function EditCardModal() {
         </ModalBody>
         <ModalFooter>
           <Button
-            onClick={() => toggleEditCardModal()}
+            colorScheme="red"
+            onClick={() => handleDeleteCard()}
             marginRight="16px"
           >
-            Discard
+            Delete
           </Button>
           <Button
             colorScheme="green"
