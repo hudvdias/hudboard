@@ -5,27 +5,39 @@ import { IProviderProps } from "./AppProvider";
 
 interface IModalContextProps {
   isStartModalOpen: boolean,
-  isCardModalOpen: boolean,
-  toggleModal: ({ modal }: IOpenModalProps) => void,
-};
-
-interface IOpenModalProps {
-  modal: 'start' | 'card',
+  isCreateCardModalOpen: boolean,
+  isEditCardModalOpen: boolean,
+  editCardId: string,
+  toggleStartModal: () => void,
+  toggleCreateCardModal: () => void,
+  toggleEditCardModal: (id?: string) => void,
 };
 
 const ModalContext = createContext<IModalContextProps>({} as IModalContextProps);
 
 export function ModalProvider({ children }: IProviderProps) {
   const [ isStartModalOpen, setIsStartModalOpen ] = useState(false);
-  const [ isCardModalOpen, setIsCardModalOpen ] = useState(false);
+  const [ isCreateCardModalOpen, setIsCreateCardModalOpen ] = useState(false);
+  const [ isEditCardModalOpen, setIsEditCardModalOpen ] = useState(false);
+  const [ myEditCardId, setMyEditCardId ] = useState('');
 
-  function toggleModal({ modal }: IOpenModalProps) {
-    if (modal === 'start') {
-      setIsStartModalOpen(!isStartModalOpen);
-    };
-    if (modal === 'card') {
-      setIsCardModalOpen(!isCardModalOpen);
-    };
+  function toggleStartModal() {
+    setIsStartModalOpen(!isStartModalOpen);
+    return;
+  };
+
+  function toggleCreateCardModal() {
+    setIsCreateCardModalOpen(!isCreateCardModalOpen);
+    return;
+  };
+
+  function toggleEditCardModal(id?: string) {
+    if (id) {
+      setMyEditCardId(id);
+      setIsEditCardModalOpen(true);
+      return;
+    }
+    setIsEditCardModalOpen(false);
     return;
   };
 
@@ -33,8 +45,12 @@ export function ModalProvider({ children }: IProviderProps) {
     <ModalContext.Provider
       value={{
         isStartModalOpen,
-        isCardModalOpen,
-        toggleModal,
+        isCreateCardModalOpen,
+        isEditCardModalOpen,
+        editCardId: myEditCardId,
+        toggleStartModal,
+        toggleCreateCardModal,
+        toggleEditCardModal,
       }}
     >
       {children}

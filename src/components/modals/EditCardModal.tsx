@@ -19,23 +19,25 @@ interface IEditTaskProps {
   isDone?: boolean,
 };
 
-export function CardModal() {
+export function EditCardModal() {
   const [card, setCard] = useState({} as ICard);
-  const [tasks, setTasks] = useState<ITask[]>([]);
+  const [cardTasks, setCardTasks] = useState<ITask[]>([]);
   const [titleError, setTitleError] = useState(false);
 
-  const { isCardModalOpen, toggleModal } = useModal();
-  const { statuses, createCard } = useBoard();
+  const { isEditCardModalOpen, toggleEditCardModal, editCardId } = useModal();
+  const { statuses, cards, tasks } = useBoard();
 
   useEffect(() => {
-    const newCard = {
-      id: v4(),
-      title: '',
-      statusId: statuses[0]?.id,
-      tasksIds: [],
-    }
-    setCard(newCard);
-  }, [statuses]);
+    const myCard = cards.find((card) => {
+      return card.id === editCardId;
+    });
+    const myTasks = tasks.filter((task) => {
+      return task.cardId === editCardId;
+    });
+    if (!myCard) return;
+    setCard(myCard);
+    setCardTasks(myTasks);
+  }, [cards, tasks, editCardId]);
 
   function handleEditCard({ title, statusId }: IEditCardProps) {
     const newCard = {
@@ -53,8 +55,8 @@ export function CardModal() {
       title: '',
       isDone: false,
     };
-    const newTasks = [...tasks, newTask];
-    setTasks(newTasks);
+    const newTasks = [...cardTasks, newTask];
+    setCardTasks(newTasks);
     const newCard = {
       ...card,
       cardsIds: card.tasksIds.push(newTask.id),
@@ -63,14 +65,14 @@ export function CardModal() {
   };
 
   function handleRemoveTask(id: string) {
-    const newTasks = tasks.filter((task) => {
+    const newTasks = cardTasks.filter((task) => {
       return task.id !== id;
     });
-    setTasks(newTasks);
+    setCardTasks(newTasks);
   };
 
   function handleEditTask({ id, title, isDone }: IEditTaskProps) {
-    const myTask = tasks.find((task) => {
+    const myTask = cardTasks.find((task) => {
       return task.id === id;
     });
     if (!myTask) return;
@@ -79,42 +81,36 @@ export function CardModal() {
       title: title ? title : myTask.title,
       isDone: isDone ? isDone : myTask.isDone,
     };
-    const newTasks = tasks.map((task) => {
+    const newTasks = cardTasks.map((task) => {
       if (task.id === id) {
         return newTask;
       };
       return task;
     });
-    setTasks(newTasks);
+    setCardTasks(newTasks);
   };
 
   function resetModal() {
-    const newCard = {
-      id: v4(),
-      title: '',
-      statusId: statuses[0]?.id,
-      tasksIds: [],
-    }
-    setCard(newCard);
-    setTasks([]);
+    setCard({} as ICard);
+    setCardTasks([]);
   };
 
-  function handleCreateCard() {
+  function handleSubmit() {
     if (!card.title) {
       setTitleError(true);
       return;
     }
     setTitleError(false);
-    createCard(card, tasks);
+    console.log(card, tasks);
     resetModal();
-    toggleModal({ modal: 'card' });
+    toggleEditCardModal();
     return;
   };
 
   return (
     <Modal
-      isOpen={isCardModalOpen}
-      onClose={() => toggleModal({ modal: 'card' })}
+      isOpen={isEditCardModalOpen}
+      onClose={() => toggleEditCardModal()}
       size="4xl"
       closeOnOverlayClick={false}
     >
@@ -123,7 +119,7 @@ export function CardModal() {
         as="form"
       >
         <ModalHeader>
-          Create Card
+          Edit Card
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -180,9 +176,9 @@ export function CardModal() {
                 Tasks
               </FormLabel>
               <Stack
-                marginBottom={tasks.length > 0 ? '16px' : '0'}
+                marginBottom={cardTasks.length > 0 ? '16px' : '0'}
               >
-                {tasks.map((task) => (
+                {cardTasks.map((task) => (
                   <HStack
                     spacing="8px"
                     key={task.id}
@@ -219,10 +215,16 @@ export function CardModal() {
         </ModalBody>
         <ModalFooter>
           <Button
-            colorScheme="blue"
-            onClick={() => handleCreateCard()}
+            onClick={() => toggleEditCardModal()}
+            marginRight="16px"
           >
-            Create Card
+            Discard
+          </Button>
+          <Button
+            colorScheme="green"
+            onClick={() => handleSubmit()}
+          >
+            Save
           </Button>
         </ModalFooter>
       </ModalContent>

@@ -10,9 +10,9 @@ interface IBoardContextProps {
   statuses: IStatus[],
   cards: ICard[],
   tasks: ITask[],
-  createBoard: (name: string) => void;
-  createCard: (card: ICard, tasks: ITask[]) => void;
-  toggleTask: (id: string) => void;
+  createBoard: (name: string) => void,
+  createCard: (card: ICard, tasks: ITask[]) => void,
+  toggleTask: (id: string) => void,
 };
 
 const BoardContext = createContext<IBoardContextProps>({} as IBoardContextProps);
@@ -46,13 +46,13 @@ export function BoardProvider({ children }: IProviderProps) {
   const [cards, setCards] = useState<ICard[]>([]);
   const [tasks, setTasks] = useState<ITask[]>([]);
 
-  const { toggleModal } = useModal();
+  const { toggleStartModal } = useModal();
 
   useEffect(() => {
     const localBoard = localStorage.getItem('@hudboard:board');
     const localStatuses = localStorage.getItem('@hudboard:statuses');
     if (!localBoard || !localStatuses) {
-      toggleModal({ modal: 'start' });
+      toggleStartModal();
       return;
     };
     setBoard(JSON.parse(localBoard));

@@ -8,12 +8,12 @@ export function StartModal() {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
 
-  const { isStartModalOpen, toggleModal } = useModal();
+  const { isStartModalOpen, toggleStartModal } = useModal();
   const { createBoard } = useBoard();
 
   function handleCreate() {
     createBoard(name);
-    toggleModal({ modal: 'start' });
+    toggleStartModal();
     return;
   };
 

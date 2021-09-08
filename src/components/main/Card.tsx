@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Checkbox, Flex, Stack, Text } from "@chakra-ui/react";
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Checkbox, Flex, IconButton, Stack, Text } from "@chakra-ui/react";
 
 import { useBoard } from "../../hooks/useBoard";
 import { ICard, ITask } from "../../types/IBoard";
+import { EditIcon } from "@chakra-ui/icons";
+import { useModal } from "../../hooks/useModal";
 
 interface ICardProps {
   card: ICard,
@@ -12,6 +14,7 @@ export function Card({ card }: ICardProps) {
   const [cardTasks, setCardTasks] = useState<ITask[]>([]);
 
   const { tasks, toggleTask } = useBoard();
+  const { toggleEditCardModal } = useModal();
 
   useEffect(() => {
     const myTasks = tasks.filter((task) => {
@@ -39,9 +42,7 @@ export function Card({ card }: ICardProps) {
             justifyContent="space-between"
             height="48px"
           >
-            <Text
-              fontSize="sm"
-            >
+            <Text>
               {card.title}
             </Text>
             <AccordionIcon />
@@ -52,6 +53,7 @@ export function Card({ card }: ICardProps) {
             >
               {cardTasks.map((task) => (
                 <Checkbox
+                  key={task.id}
                   colorScheme="green"
                   size="sm"
                   isChecked={task.isDone}
@@ -64,6 +66,13 @@ export function Card({ card }: ICardProps) {
                 </Checkbox>
               ))}
             </Stack>
+            <IconButton
+              aria-label="Edit Card"
+              icon={<EditIcon />}
+              size="xs"
+              marginTop="16px"
+              onClick={() => toggleEditCardModal(card.id)}
+            />
           </AccordionPanel>
         </AccordionItem>
       </Accordion>

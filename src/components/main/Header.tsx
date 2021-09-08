@@ -4,7 +4,7 @@ import { useModal } from "../../hooks/useModal";
 
 export function Header() {
   const { board } = useBoard();
-  const { toggleModal } = useModal();
+  const { toggleCreateCardModal } = useModal();
 
   return (
     <Flex
@@ -21,7 +21,7 @@ export function Header() {
         marginLeft="24px"
         size="sm"
         colorScheme="blue"
-        onClick={() => toggleModal({ modal: 'card' })}
+        onClick={() => toggleCreateCardModal()}
       >
         + Add Card
       </Button>
