@@ -13,7 +13,7 @@ interface ICardProps {
 export function Card({ card }: ICardProps) {
   const [tasks, setTasks] = useState<ITask[]>([]);
 
-  const { setEditCard } = useBoard();
+  const { setEditCard, toggleTask } = useBoard();
   const { toggleCardModal } = useModal();
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export function Card({ card }: ICardProps) {
                   colorScheme="green"
                   size="sm"
                   isChecked={task.isDone}
-                  onChange={() => {}}
+                  onChange={() => toggleTask(task.id)}
                   textColor={task.isDone ? 'gray.500' : ''}
                   textDecoration={task.isDone ? 'line-through' : ''}
                   fontStyle={task.isDone ? 'italic' : ''}

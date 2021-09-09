@@ -15,6 +15,7 @@ interface IBoardContextProps {
   updateCard: (card: ICard) => void,
   deleteCard: (id: string) => void,
   setEditCard: (card?: ICard) => void,
+  toggleTask: (id: string) => void,
 }
 
 const BoardContext = createContext<IBoardContextProps>({} as IBoardContextProps);
@@ -42,45 +43,73 @@ export function BoardProvider({ children }: IProviderProps) {
   };
 
   function createCard(newCard: ICard) {
-    const statuses = board.statuses.map((status) => {
-      if (status.id === newCard.statusId) status.cards.push(newCard);
-      return status;
-    });
-    const newBoard = { ...board, statuses };
+    const newBoard = {
+      ...board,
+      statuses: board.statuses.map((status) => {
+        if (status.id === newCard.statusId) status.cards.push(newCard);
+        return status;
+      }),
+    };
     localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
     setBoard(newBoard);
   };
 
   function updateCard(newCard: ICard) {
-    const statuses = board.statuses.map((status) => {
-      if (status.id === newCard.statusId) {
-        const findCard = status.cards.find((card) => card.id === newCard.id);
-        if (findCard) {
-          const cards = status.cards.map((card) => {
-            if (card.id === newCard.id) return newCard;
-            else return card;
-          });
-          return { ...status, cards };
+    const newBoard = {
+      ...board,
+      statuses: board.statuses.map((status) => {
+        if (status.id === newCard.statusId) {
+          const findCard = status.cards.find((card) => card.id === newCard.id);
+          if (findCard) {
+            const cards = status.cards.map((card) => {
+              if (card.id === newCard.id) return newCard;
+              else return card;
+            });
+            return { ...status, cards };
+          } else {
+            status.cards.push(newCard);
+            return status;
+          };
         } else {
-          status.cards.push(newCard);
-          return status;
+          const cards = status.cards.filter((card) => card.id !== newCard.id);
+          return { ...status, cards };  
         };
-      } else {
-        const cards = status.cards.filter((card) => card.id !== newCard.id);
-        return { ...status, cards };  
-      };
-    });
-    const newBoard = { ...board, statuses };
+      }),
+    };
     localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
     setBoard(newBoard);
   };
 
   function deleteCard(cardId: string) {
-    const statuses = board.statuses.map((status) => {
-      const cards = status.cards.filter((card) => card.id !== cardId);
-      return { ...status, cards };
-    });
-    const newBoard = { ...board, statuses };
+    const newBoard = {
+      ...board,
+      statuses: board.statuses.map((status) => {
+        const cards = status.cards.filter((card) => card.id !== cardId);
+        return { ...status, cards };
+      }),
+    };
+    localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
+    setBoard(newBoard);
+  };
+
+  function toggleTask(taskId: string) {
+    const newBoard = { 
+      ...board,
+      statuses: board.statuses.map((statuses) => {
+        return {
+          ...statuses,
+          cards: statuses.cards.map((card) => {
+            return {
+              ...card,
+              tasks: card.tasks.map((task) => {
+                if (task.id === taskId) task.isDone = !task.isDone;
+                return task;
+              }),
+            };
+          }),
+        };
+      }),
+    };
     localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
     setBoard(newBoard);
   };
@@ -95,6 +124,7 @@ export function BoardProvider({ children }: IProviderProps) {
         updateCard,
         deleteCard,
         setEditCard,
+        toggleTask,
       }}
     >
       {children}
