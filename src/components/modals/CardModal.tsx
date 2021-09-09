@@ -1,5 +1,6 @@
 import { DeleteIcon } from "@chakra-ui/icons";
 import { Button, Checkbox, FormControl, FormErrorMessage, FormLabel, Grid, HStack, IconButton, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { useState } from "react";
 import { v4 } from "uuid";
 
@@ -25,7 +26,14 @@ export function CreateCardModal() {
   const [titleError, setTitleError] = useState(false);
 
   const { isCardModalOpen, toggleCardModal } = useModal();
-  const { board } = useBoard();
+  const { board, createCard, updateCard, deleteCard, editCard, setEditCard } = useBoard();
+
+  useEffect(() => {
+    if (editCard) {
+      setCard(editCard);
+      setTasks(editCard.tasks);
+    };
+  }, [editCard]);
 
   function handleEditCard({ title, statusId }: IEditCardProps) {
     const newCard = {
@@ -34,7 +42,6 @@ export function CreateCardModal() {
       statusId: statusId ? statusId : card.statusId,
     };
     setCard(newCard);
-    return;
   };
 
   function handleAddTask() {
@@ -45,66 +52,73 @@ export function CreateCardModal() {
     };
     const newTasks = [...tasks, newTask];
     setTasks(newTasks);
-    return;
   };
 
   function handleRemoveTask(id: string) {
-    const newTasks = tasks.filter((task) => {
-      return task.id !== id;
-    });
+    const newTasks = tasks.filter((task) => task.id !== id);
     setTasks(newTasks);
-    return;
   };
 
   function handleEditTask({ id, title, isDone }: IEditTaskProps) {
-    const myTask = tasks.find((task) => {
-      return task.id === id;
-    });
-    if (!myTask) {
-      return;
-    };
+    const myTask = tasks.find((task) => task.id === id);
+    if (!myTask) return;
     const newTask = {
       ...myTask,
       title: title ? title : myTask.title,
       isDone: isDone ? isDone : myTask.isDone,
     };
     const newTasks = tasks.map((task) => {
-      if (task.id === id) {
-        return newTask;
-      };
-      return task;
+      if (task.id === id) return newTask;
+      else return task;
     });
     setTasks(newTasks);
-    return;
   };
 
-  function resetModal() {
+  function handleCloseModal() {
+    setEditCard();
     setCard(emptyCard);
     setTasks([]);
-    return;
+    toggleCardModal();
   };
 
-  function handleSubmit() {
+  function handleSubmitCreateCard() {
     if (!card.title) {
       setTitleError(true);
       return;
-    }
+    };
     setTitleError(false);
     const newCard = {
       ...card,
       id: v4(),
       tasks,
     }
-    console.log(newCard);
-    resetModal();
-    toggleCardModal();
-    return;
+    createCard(newCard);
+    handleCloseModal();
+  };
+
+  function handleSubmitEditCard() {
+    if (!card.title) {
+      setTitleError(true);
+      return;
+    };
+    setTitleError(false);
+    const newCard = {
+      ...card,
+      tasks,
+    };
+    updateCard(newCard);
+    handleCloseModal();
+  };
+
+  function handleSubmitDeleteCard() {
+    deleteCard(card.id);
+    handleCloseModal();
   };
 
   return (
     <Modal
       isOpen={isCardModalOpen}
-      onClose={() => toggleCardModal()}
+      onClose={() => handleCloseModal()}
       size="4xl"
       closeOnOverlayClick={false}
     >
@@ -113,7 +127,7 @@ export function CreateCardModal() {
         as="form"
       >
         <ModalHeader>
-          Create Card
+          {editCard ? 'Edit Card' : 'Create Card'}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -207,14 +221,32 @@ export function CreateCardModal() {
             </FormControl>
           </Grid>
         </ModalBody>
-        <ModalFooter>
-          <Button
-            colorScheme="blue"
-            onClick={() => handleSubmit()}
-          >
-            Create Card
-          </Button>
-        </ModalFooter>
+        {editCard ? (
+          <ModalFooter>
+            <Button
+              colorScheme="red"
+              marginRight="16px"
+              onClick={() => handleSubmitDeleteCard()}
+            >
+              Delete
+            </Button>
+            <Button
+              colorScheme="green"
+              onClick={() => handleSubmitEditCard()}
+            >
+              Save
+            </Button>
+          </ModalFooter>
+        ) : (
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              onClick={() => handleSubmitCreateCard()}
+            >
+              Create Card
+            </Button>
+          </ModalFooter>
+        )}
       </ModalContent>
     </Modal>
   );

@@ -42,6 +42,6 @@ export const initialStatuses: IStatus[] = [
 export const emptyCard: ICard = {
   id: '',
   title: '',
-  statusId: '',
+  statusId: '1', //draft
   tasks: [],
 };

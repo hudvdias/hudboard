@@ -3,6 +3,8 @@ import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPane
 
 import { ICard, ITask } from "../../types/IBoard";
 import { EditIcon } from "@chakra-ui/icons";
+import { useBoard } from "../../hooks/useBoard";
+import { useModal } from "../../hooks/useModal";
 
 interface ICardProps {
   card: ICard,
@@ -11,9 +13,17 @@ interface ICardProps {
 export function Card({ card }: ICardProps) {
   const [tasks, setTasks] = useState<ITask[]>([]);
 
+  const { setEditCard } = useBoard();
+  const { toggleCardModal } = useModal();
+
   useEffect(() => {
     setTasks(card.tasks);
   }, [card]);
+
+  function handleEditCard() {
+    setEditCard(card);
+    toggleCardModal();
+  };
 
   return (
     <Flex
@@ -66,7 +76,7 @@ export function Card({ card }: ICardProps) {
               aria-label="Edit Card"
               icon={<EditIcon />}
               size="xs"
-              onClick={() => {}}
+              onClick={() => handleEditCard()}
             />
           </AccordionPanel>
         </AccordionItem>
