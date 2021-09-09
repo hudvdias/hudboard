@@ -1,9 +1,18 @@
 import { Grid } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { useState } from "react";
 import { useBoard } from "../../hooks/useBoard";
+import { IStatus } from "../../types/IBoard";
 import { Column } from "./Column";
 
 export function Board() {
-  const { statuses } = useBoard();
+  const [statuses, setStatuses] = useState<IStatus[]>([]);
+
+  const { board } = useBoard();
+
+  useEffect(() => {
+    setStatuses(board.statuses);
+  }, [board]);
 
   return (
     <Grid

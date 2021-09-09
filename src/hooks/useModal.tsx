@@ -5,39 +5,24 @@ import { IProviderProps } from "./AppProvider";
 
 interface IModalContextProps {
   isStartModalOpen: boolean,
-  isCreateCardModalOpen: boolean,
-  isEditCardModalOpen: boolean,
-  editCardId: string,
+  isCardModalOpen: boolean,
   toggleStartModal: () => void,
-  toggleCreateCardModal: () => void,
-  toggleEditCardModal: (id?: string) => void,
+  toggleCardModal: () => void,
 };
 
 const ModalContext = createContext<IModalContextProps>({} as IModalContextProps);
 
 export function ModalProvider({ children }: IProviderProps) {
   const [ isStartModalOpen, setIsStartModalOpen ] = useState(false);
-  const [ isCreateCardModalOpen, setIsCreateCardModalOpen ] = useState(false);
-  const [ isEditCardModalOpen, setIsEditCardModalOpen ] = useState(false);
-  const [ myEditCardId, setMyEditCardId ] = useState('');
+  const [ isCardModalOpen, setIsCardModalOpen ] = useState(false);
 
   function toggleStartModal() {
     setIsStartModalOpen(!isStartModalOpen);
     return;
   };
 
-  function toggleCreateCardModal() {
-    setIsCreateCardModalOpen(!isCreateCardModalOpen);
-    return;
-  };
-
-  function toggleEditCardModal(id?: string) {
-    if (id) {
-      setMyEditCardId(id);
-      setIsEditCardModalOpen(true);
-      return;
-    }
-    setIsEditCardModalOpen(false);
+  function toggleCardModal() {
+    setIsCardModalOpen(!isCardModalOpen);
     return;
   };
 
@@ -45,12 +30,9 @@ export function ModalProvider({ children }: IProviderProps) {
     <ModalContext.Provider
       value={{
         isStartModalOpen,
-        isCreateCardModalOpen,
-        isEditCardModalOpen,
-        editCardId: myEditCardId,
+        isCardModalOpen,
         toggleStartModal,
-        toggleCreateCardModal,
-        toggleEditCardModal,
+        toggleCardModal,
       }}
     >
       {children}

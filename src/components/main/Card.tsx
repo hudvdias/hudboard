@@ -1,27 +1,19 @@
 import { useEffect, useState } from "react";
 import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Checkbox, Flex, IconButton, Stack, Text } from "@chakra-ui/react";
 
-import { useBoard } from "../../hooks/useBoard";
 import { ICard, ITask } from "../../types/IBoard";
 import { EditIcon } from "@chakra-ui/icons";
-import { useModal } from "../../hooks/useModal";
 
 interface ICardProps {
   card: ICard,
 };
 
 export function Card({ card }: ICardProps) {
-  const [cardTasks, setCardTasks] = useState<ITask[]>([]);
-
-  const { tasks, toggleTask } = useBoard();
-  const { toggleEditCardModal } = useModal();
+  const [tasks, setTasks] = useState<ITask[]>([]);
 
   useEffect(() => {
-    const myTasks = tasks.filter((task) => {
-      return task.cardId === card.id;
-    });
-    setCardTasks(myTasks);
-  }, [tasks, card]);
+    setTasks(card.tasks);
+  }, [card]);
 
   return (
     <Flex
@@ -53,15 +45,15 @@ export function Card({ card }: ICardProps) {
           <AccordionPanel>
             <Stack
               spacing="0"
-              marginBottom={cardTasks.length > 0 ? '16px' : '0'}
+              marginBottom={tasks.length > 0 ? '16px' : '0'}
             >
-              {cardTasks.map((task) => (
+              {tasks.map((task) => (
                 <Checkbox
                   key={task.id}
                   colorScheme="green"
                   size="sm"
                   isChecked={task.isDone}
-                  onChange={() => toggleTask(task.id)}
+                  onChange={() => {}}
                   textColor={task.isDone ? 'gray.500' : ''}
                   textDecoration={task.isDone ? 'line-through' : ''}
                   fontStyle={task.isDone ? 'italic' : ''}
@@ -74,7 +66,7 @@ export function Card({ card }: ICardProps) {
               aria-label="Edit Card"
               icon={<EditIcon />}
               size="xs"
-              onClick={() => toggleEditCardModal(card.id)}
+              onClick={() => {}}
             />
           </AccordionPanel>
         </AccordionItem>

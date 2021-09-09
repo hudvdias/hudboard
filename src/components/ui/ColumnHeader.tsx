@@ -26,7 +26,7 @@ export function ColumnHeader({ status }: IColumnHeaderProps) {
       <Tag
         size="sm"
       >
-        {status.cardsIds.length}
+        {status.cards.length}
       </Tag>
     </Flex>
   );

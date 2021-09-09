@@ -1,9 +1,9 @@
 import { DeleteIcon } from "@chakra-ui/icons";
 import { Button, Checkbox, FormControl, FormErrorMessage, FormLabel, Grid, HStack, IconButton, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack } from "@chakra-ui/react";
-import { useEffect } from "react";
 import { useState } from "react";
 import { v4 } from "uuid";
 
+import { emptyCard } from "../../data/initialData";
 import { useBoard } from "../../hooks/useBoard";
 import { useModal } from "../../hooks/useModal";
 import { ICard, ITask } from "../../types/IBoard";
@@ -19,25 +19,13 @@ interface IEditTaskProps {
   isDone?: boolean,
 };
 
-export function EditCardModal() {
-  const [card, setCard] = useState({} as ICard);
-  const [cardTasks, setCardTasks] = useState<ITask[]>([]);
+export function CreateCardModal() {
+  const [card, setCard] = useState<ICard>(emptyCard);
+  const [tasks, setTasks] = useState<ITask[]>([]);
   const [titleError, setTitleError] = useState(false);
 
-  const { isEditCardModalOpen, toggleEditCardModal, editCardId } = useModal();
-  const { statuses, cards, tasks, editCard, deleteCard } = useBoard();
-
-  useEffect(() => {
-    const myCard = cards.find((card) => {
-      return card.id === editCardId;
-    });
-    const myTasks = tasks.filter((task) => {
-      return task.cardId === editCardId;
-    });
-    if (!myCard) return;
-    setCard(myCard);
-    setCardTasks(myTasks);
-  }, [cards, tasks, editCardId]);
+  const { isCardModalOpen, toggleCardModal } = useModal();
+  const { board } = useBoard();
 
   function handleEditCard({ title, statusId }: IEditCardProps) {
     const newCard = {
@@ -46,53 +34,54 @@ export function EditCardModal() {
       statusId: statusId ? statusId : card.statusId,
     };
     setCard(newCard);
+    return;
   };
 
   function handleAddTask() {
     const newTask = {
       id: v4(),
-      cardId: card.id,
       title: '',
       isDone: false,
     };
-    const newTasks = [...cardTasks, newTask];
-    setCardTasks(newTasks);
-    const newCard = {
-      ...card,
-      cardsIds: card.tasksIds.push(newTask.id),
-    };
-    setCard(newCard);
+    const newTasks = [...tasks, newTask];
+    setTasks(newTasks);
+    return;
   };
 
   function handleRemoveTask(id: string) {
-    const newTasks = cardTasks.filter((task) => {
+    const newTasks = tasks.filter((task) => {
       return task.id !== id;
     });
-    setCardTasks(newTasks);
+    setTasks(newTasks);
+    return;
   };
 
   function handleEditTask({ id, title, isDone }: IEditTaskProps) {
-    const myTask = cardTasks.find((task) => {
+    const myTask = tasks.find((task) => {
       return task.id === id;
     });
-    if (!myTask) return;
+    if (!myTask) {
+      return;
+    };
     const newTask = {
       ...myTask,
       title: title ? title : myTask.title,
       isDone: isDone ? isDone : myTask.isDone,
     };
-    const newTasks = cardTasks.map((task) => {
+    const newTasks = tasks.map((task) => {
       if (task.id === id) {
         return newTask;
       };
       return task;
     });
-    setCardTasks(newTasks);
+    setTasks(newTasks);
+    return;
   };
 
   function resetModal() {
-    setCard({} as ICard);
-    setCardTasks([]);
+    setCard(emptyCard);
+    setTasks([]);
+    return;
   };
 
   function handleSubmit() {
@@ -101,23 +90,21 @@ export function EditCardModal() {
       return;
     }
     setTitleError(false);
-    editCard(card, cardTasks);
+    const newCard = {
+      ...card,
+      id: v4(),
+      tasks,
+    }
+    console.log(newCard);
     resetModal();
-    toggleEditCardModal();
-    return;
-  };
-
-  function handleDeleteCard() {
-    deleteCard(card.id);
-    resetModal();
-    toggleEditCardModal();
+    toggleCardModal();
     return;
   };
 
   return (
     <Modal
-      isOpen={isEditCardModalOpen}
-      onClose={() => toggleEditCardModal()}
+      isOpen={isCardModalOpen}
+      onClose={() => toggleCardModal()}
       size="4xl"
       closeOnOverlayClick={false}
     >
@@ -126,7 +113,7 @@ export function EditCardModal() {
         as="form"
       >
         <ModalHeader>
-          Edit Card
+          Create Card
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -167,7 +154,7 @@ export function EditCardModal() {
                   value={card.statusId}
                   onChange={(event) => handleEditCard({ statusId: event.currentTarget.value })}
                 >
-                  {statuses.map((status) => (
+                  {board.statuses.map((status) => (
                     <option
                       value={status.id}
                       key={status.id}
@@ -183,9 +170,9 @@ export function EditCardModal() {
                 Tasks
               </FormLabel>
               <Stack
-                marginBottom={cardTasks.length > 0 ? '16px' : '0'}
+                marginBottom={tasks.length > 0 ? '16px' : '0'}
               >
-                {cardTasks.map((task) => (
+                {tasks.map((task) => (
                   <HStack
                     spacing="8px"
                     key={task.id}
@@ -222,17 +209,10 @@ export function EditCardModal() {
         </ModalBody>
         <ModalFooter>
           <Button
-            colorScheme="red"
-            onClick={() => handleDeleteCard()}
-            marginRight="16px"
-          >
-            Delete
-          </Button>
-          <Button
-            colorScheme="green"
+            colorScheme="blue"
             onClick={() => handleSubmit()}
           >
-            Save
+            Create Card
           </Button>
         </ModalFooter>
       </ModalContent>

@@ -1,7 +1,6 @@
 import { Flex, Stack } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useBoard } from "../../hooks/useBoard";
 import { ICard, IStatus } from "../../types/IBoard";
 import { ColumnHeader } from "../ui/ColumnHeader";
 import { Card } from "./Card";
@@ -11,16 +10,11 @@ interface IColumnProps {
 }
 
 export function Column({ status }: IColumnProps) {
-  const [statusCards, setStatusCards] = useState<ICard[]>([]);
-
-  const { cards } = useBoard();
+  const [cards, setCards] = useState<ICard[]>([]);
 
   useEffect(() => {
-    const myCards = cards.filter((card) => {
-      return card.statusId === status.id;
-    });
-    setStatusCards(myCards);
-  }, [cards, status]);
+    setCards(status.cards);
+  }, [status]);
 
   return (
     <Flex
@@ -32,8 +26,11 @@ export function Column({ status }: IColumnProps) {
         spacing="16px"
         height="100%"
       >
-        {statusCards.map((card) => (
-          <Card card={card} key={card.id} />
+        {cards.map((card) => (
+          <Card
+            card={card}
+            key={card.id}
+          />
         ))}
       </Stack>
     </Flex>

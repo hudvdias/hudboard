@@ -1,27 +1,25 @@
 export interface IBoard {
   id: string,
   name: string,
-  statusesIds: string[],
+  statuses: IStatus[],
 };
 
 export interface IStatus {
   id: string,
-  boardId: string,
   title: string,
   color: string,
-  cardsIds: string[],
+  cards: ICard[],
 };
 
 export interface ICard {
   id: string,
-  statusId: string,
   title: string,
-  tasksIds: string[],
+  statusId: string,
+  tasks: ITask[],
 };
 
 export interface ITask {
   id: string,
-  cardId: string,
   title: string,
   isDone: boolean,
 };

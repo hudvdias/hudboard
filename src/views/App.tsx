@@ -4,8 +4,7 @@ import { AppProvider } from "../hooks/AppProvider";
 import { Header } from "../components/main/Header";
 import { Board } from "../components/main/Board";
 import { StartModal } from "../components/modals/StartModal";
-import { CreateCardModal } from "../components/modals/CreateCardModal";
-import { EditCardModal } from "../components/modals/EditCardModal";
+import { CreateCardModal } from "../components/modals/CardModal";
 
 export function App() {
   return (
@@ -19,7 +18,6 @@ export function App() {
         <Header />
         <Board />
         <CreateCardModal />
-        <EditCardModal />
       </Flex>
     </AppProvider>
   );
