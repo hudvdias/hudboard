@@ -1,6 +1,7 @@
 import { Grid } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useState } from "react";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { useBoard } from "../../hooks/useBoard";
 import { IStatus } from "../../types/IBoard";
 import { Column } from "./Column";
@@ -8,11 +9,42 @@ import { Column } from "./Column";
 export function Board() {
   const [statuses, setStatuses] = useState<IStatus[]>([]);
 
-  const { board } = useBoard();
+  const { board, updateStatuses } = useBoard();
 
   useEffect(() => {
     setStatuses(board.statuses);
   }, [board]);
+
+  function handleOnDragEnd(result: DropResult) {
+    if (!result.destination) return;
+    if (
+      result.destination.droppableId === result.source.droppableId &&
+      result.destination.index === result.source.index
+    ) return;
+    const startStatus = statuses.find((status) => status.id === result.source.droppableId);
+    const endStatus = statuses.find((status) => status.id === result.destination?.droppableId);
+    if (!startStatus || !endStatus) return;
+    if (startStatus === endStatus) {
+      const myCards = startStatus.cards
+      const [myCard] = myCards.splice(result.source.index, 1);
+      myCards.splice(result.destination.index, 0, myCard);
+      const newStatus = { ...startStatus, cards: myCards };
+      const newStatuses = statuses.map((status) => {
+        if (status.id === newStatus.id) return newStatus;
+        return status;
+      });
+      updateStatuses(newStatuses);
+    } else {
+      const [myCard] = startStatus.cards.splice(result.source.index, 1);
+      endStatus.cards.splice(result.destination.index, 0, myCard);
+      const newStatuses = statuses.map((status) => {
+        if (status.id === startStatus.id) return startStatus;
+        if (status.id === endStatus.id) return endStatus;
+        return status;
+      });
+      updateStatuses(newStatuses);
+    };
+  };
 
   return (
     <Grid
@@ -22,12 +54,16 @@ export function Board() {
       paddingX="24px"
       gap="24px"
     >
-      {statuses.map((status) => (
-        <Column
-          status={status}
-          key={status.id}
-        />
-      ))}
+      <DragDropContext
+        onDragEnd={(result) => handleOnDragEnd(result)}
+      >
+        {statuses.map((status) => (
+          <Column
+            status={status}
+            key={status.id}
+          />
+        ))}
+      </DragDropContext>
     </Grid>
   );
 };

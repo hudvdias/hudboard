@@ -5,12 +5,14 @@ import { ICard, ITask } from "../../types/IBoard";
 import { EditIcon } from "@chakra-ui/icons";
 import { useBoard } from "../../hooks/useBoard";
 import { useModal } from "../../hooks/useModal";
+import { Draggable } from "react-beautiful-dnd";
 
 interface ICardProps {
   card: ICard,
+  index: number,
 };
 
-export function Card({ card }: ICardProps) {
+export function Card({ card, index }: ICardProps) {
   const [tasks, setTasks] = useState<ITask[]>([]);
 
   const { setEditCard, toggleTask } = useBoard();
@@ -26,61 +28,71 @@ export function Card({ card }: ICardProps) {
   };
 
   return (
-    <Flex
-      flexDirection="column"
-      width="100%"
-      background="gray.700"
-      borderRadius="lg"
+    <Draggable
+      draggableId={card.id}
+      index={index}
     >
-      <Accordion
-        allowToggle
-      >
-        <AccordionItem
-          border="none"
+      {(cardProvided) => (
+        <Flex
+          flexDirection="column"
+          width="100%"
+          background="gray.700"
+          borderRadius="lg"
+          ref={cardProvided.innerRef}
+          {...cardProvided.draggableProps}
+          {...cardProvided.dragHandleProps}
         >
-          <AccordionButton
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            padding="16px"
+          <Accordion
+            allowToggle
           >
-            <Text
-              width="100%"
-              textAlign="left"
+            <AccordionItem
+              border="none"
             >
-              {card.title}
-            </Text>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel>
-            <Stack
-              spacing="0"
-              marginBottom={tasks.length > 0 ? '16px' : '0'}
-            >
-              {tasks.map((task) => (
-                <Checkbox
-                  key={task.id}
-                  colorScheme="green"
-                  size="sm"
-                  isChecked={task.isDone}
-                  onChange={() => toggleTask(task.id)}
-                  textColor={task.isDone ? 'gray.500' : ''}
-                  textDecoration={task.isDone ? 'line-through' : ''}
-                  fontStyle={task.isDone ? 'italic' : ''}
+              <AccordionButton
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                padding="16px"
+              >
+                <Text
+                  width="100%"
+                  textAlign="left"
                 >
-                  {task.title}
-                </Checkbox>
-              ))}
-            </Stack>
-            <IconButton
-              aria-label="Edit Card"
-              icon={<EditIcon />}
-              size="xs"
-              onClick={() => handleEditCard()}
-            />
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
-    </Flex>
+                  {card.title}
+                </Text>
+                <AccordionIcon />
+              </AccordionButton>
+              <AccordionPanel>
+                <Stack
+                  spacing="0"
+                  marginBottom={tasks.length > 0 ? '16px' : '0'}
+                >
+                  {tasks.map((task) => (
+                    <Checkbox
+                      key={task.id}
+                      colorScheme="green"
+                      size="sm"
+                      isChecked={task.isDone}
+                      onChange={() => toggleTask(task.id)}
+                      textColor={task.isDone ? 'gray.500' : ''}
+                      textDecoration={task.isDone ? 'line-through' : ''}
+                      fontStyle={task.isDone ? 'italic' : ''}
+                    >
+                      {task.title}
+                    </Checkbox>
+                  ))}
+                </Stack>
+                <IconButton
+                  aria-label="Edit Card"
+                  icon={<EditIcon />}
+                  size="xs"
+                  onClick={() => handleEditCard()}
+                />
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+        </Flex>
+      )}
+    </Draggable>
   );
 };

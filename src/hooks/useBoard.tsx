@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from "react";
 import { v4 } from "uuid";
 
 import { emptyBoard, initialStatuses } from "../data/initialData";
-import { IBoard, ICard } from "../types/IBoard";
+import { IBoard, ICard, IStatus } from "../types/IBoard";
 import { IProviderProps } from "./AppProvider";
 import { useModal } from "./useModal";
 
@@ -11,6 +11,7 @@ interface IBoardContextProps {
   board: IBoard,
   editCard: ICard | undefined,
   createBoard: (name: string) => void,
+  updateStatuses: (statuses: IStatus[]) => void,
   createCard: (card: ICard) => void,
   updateCard: (card: ICard) => void,
   deleteCard: (id: string) => void,
@@ -38,6 +39,15 @@ export function BoardProvider({ children }: IProviderProps) {
 
   function createBoard(name: string) {
     const newBoard = { id: v4(), name, statuses: initialStatuses };
+    localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
+    setBoard(newBoard);
+  };
+
+  function updateStatuses(statuses: IStatus[]) {
+    const newBoard = {
+      ...board,
+      statuses,
+    };
     localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
     setBoard(newBoard);
   };
@@ -120,6 +130,7 @@ export function BoardProvider({ children }: IProviderProps) {
         board,
         editCard,
         createBoard,
+        updateStatuses,
         createCard,
         updateCard,
         deleteCard,
