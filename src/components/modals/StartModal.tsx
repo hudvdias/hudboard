@@ -9,12 +9,16 @@ export function StartModal() {
   const [name, setName] = useState('');
 
   const { isStartModalOpen, toggleStartModal } = useModal();
-  const { createBoard } = useBoard();
+  const { createBoard, loadBoard } = useBoard();
 
-  function handleCreate() {
-    createBoard(name);
-    toggleStartModal();
-    return;
+  async function handleCreate() {
+    const boardId = await createBoard(name);
+    if (boardId) toggleStartModal();
+  };
+
+  async function handleLoad() {
+    const boardId = await loadBoard(id);
+    if (boardId) toggleStartModal();
   };
 
   return(
@@ -62,6 +66,7 @@ export function StartModal() {
                 colorScheme="blue"
                 borderRadius="full"
                 marginTop="16px"
+                onClick={() => handleLoad()}
               >
                 Load Board
               </Button>

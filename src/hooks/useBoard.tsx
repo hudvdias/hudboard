@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from "react";
 import { v4 } from "uuid";
 
 import { emptyBoard, initialStatuses } from "../data/initialData";
+import { api } from "../services/api";
 import { IBoard, ICard, IStatus } from "../types/IBoard";
 import { IProviderProps } from "./AppProvider";
 import { useModal } from "./useModal";
@@ -10,13 +11,14 @@ import { useModal } from "./useModal";
 interface IBoardContextProps {
   board: IBoard,
   editCard: ICard | undefined,
-  createBoard: (name: string) => void,
-  updateStatuses: (statuses: IStatus[]) => void,
-  createCard: (card: ICard) => void,
-  updateCard: (card: ICard) => void,
-  deleteCard: (id: string) => void,
+  createBoard: (name: string) => Promise<string | undefined>,
+  loadBoard: (id: string) => Promise<string | undefined>,
+  updateStatuses: (statuses: IStatus[]) => Promise<void>,
+  createCard: (card: ICard) => Promise<void>,
+  updateCard: (card: ICard) => Promise<void>,
+  deleteCard: (id: string) => Promise<void>,
+  toggleTask: (id: string) => Promise<void>,
   setEditCard: (card?: ICard) => void,
-  toggleTask: (id: string) => void,
 }
 
 const BoardContext = createContext<IBoardContextProps>({} as IBoardContextProps);
@@ -28,31 +30,58 @@ export function BoardProvider({ children }: IProviderProps) {
   const { toggleStartModal } = useModal();
 
   useEffect(() => {
-    const localBoard = localStorage.getItem("@hudboard:board");
-    if (localBoard) {
-      setBoard(JSON.parse(localBoard));
+    const localId = localStorage.getItem("@hudboard:id");
+    if (localId) {
+      loadBoard(localId);
       return;
-    }
+    };
     toggleStartModal();
     // eslint-disable-next-line
   }, []);
 
-  function createBoard(name: string) {
+  async function createBoard(name: string) {
     const newBoard = { id: v4(), name, statuses: initialStatuses };
-    localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
-    setBoard(newBoard);
+    try {
+      const response = await api.post('create-board', newBoard);
+      const boardMongoId: string = response.data.insertedId.$oid;
+      localStorage.setItem("@hudboard:id", boardMongoId);
+      setBoard(newBoard);
+      return boardMongoId;
+    } catch (error) {
+      console.log(error);
+    };
   };
 
-  function updateStatuses(statuses: IStatus[]) {
+  async function loadBoard(id: string) {
+    try {
+      const response = await api.post('load-board', { id });
+      localStorage.setItem("@hudboard:id", response.data._id.$oid);
+      const newBoard: IBoard = {
+        id: response.data.id,
+        name: response.data.name,
+        statuses: response.data.statuses,
+      };
+      setBoard(newBoard);
+      return newBoard.id;
+    } catch (error) {
+      console.log(error);
+    };
+  };
+
+  async function updateStatuses(statuses: IStatus[]) {
     const newBoard = {
       ...board,
       statuses,
     };
-    localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
-    setBoard(newBoard);
+    try {
+      await api.post('/edit-board', newBoard);
+      setBoard(newBoard);
+    } catch (error) {
+      console.log(error);
+    };
   };
 
-  function createCard(newCard: ICard) {
+  async function createCard(newCard: ICard) {
     const newBoard = {
       ...board,
       statuses: board.statuses.map((status) => {
@@ -60,11 +89,15 @@ export function BoardProvider({ children }: IProviderProps) {
         return status;
       }),
     };
-    localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
-    setBoard(newBoard);
+    try {
+      await api.post('/edit-board', newBoard);
+      setBoard(newBoard);
+    } catch (error) {
+      console.log(error);
+    };
   };
 
-  function updateCard(newCard: ICard) {
+  async function updateCard(newCard: ICard) {
     const newBoard = {
       ...board,
       statuses: board.statuses.map((status) => {
@@ -82,15 +115,19 @@ export function BoardProvider({ children }: IProviderProps) {
           };
         } else {
           const cards = status.cards.filter((card) => card.id !== newCard.id);
-          return { ...status, cards };  
+          return { ...status, cards };
         };
       }),
     };
-    localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
-    setBoard(newBoard);
+    try {
+      await api.post('/edit-board', newBoard);
+      setBoard(newBoard);
+    } catch (error) {
+      console.log(error);
+    };
   };
 
-  function deleteCard(cardId: string) {
+  async function deleteCard(cardId: string) {
     const newBoard = {
       ...board,
       statuses: board.statuses.map((status) => {
@@ -98,12 +135,16 @@ export function BoardProvider({ children }: IProviderProps) {
         return { ...status, cards };
       }),
     };
-    localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
-    setBoard(newBoard);
+    try {
+      await api.post('/edit-board', newBoard);
+      setBoard(newBoard);
+    } catch (error) {
+      console.log(error);
+    };
   };
 
-  function toggleTask(taskId: string) {
-    const newBoard = { 
+  async function toggleTask(taskId: string) {
+    const newBoard = {
       ...board,
       statuses: board.statuses.map((statuses) => {
         return {
@@ -120,8 +161,12 @@ export function BoardProvider({ children }: IProviderProps) {
         };
       }),
     };
-    localStorage.setItem("@hudboard:board", JSON.stringify(newBoard));
-    setBoard(newBoard);
+    try {
+      await api.post('/edit-board', newBoard);
+      setBoard(newBoard);
+    } catch (error) {
+      console.log(error);
+    };
   };
 
   return (
@@ -130,6 +175,7 @@ export function BoardProvider({ children }: IProviderProps) {
         board,
         editCard,
         createBoard,
+        loadBoard,
         updateStatuses,
         createCard,
         updateCard,
