@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Checkbox, Flex, IconButton, Stack, Text } from "@chakra-ui/react";
 
 import { ICard, ITask } from "../../types/IBoard";
-import { EditIcon } from "@chakra-ui/icons";
+import { DragHandleIcon, EditIcon } from "@chakra-ui/icons";
 import { useBoard } from "../../hooks/useBoard";
 import { useModal } from "../../hooks/useModal";
 import { Draggable } from "react-beautiful-dnd";
@@ -48,20 +48,33 @@ export function Card({ card, index }: ICardProps) {
             <AccordionItem
               border="none"
             >
-              <AccordionButton
-                display="flex"
+              <Flex
                 alignItems="center"
-                justifyContent="space-between"
-                padding="16px"
-              >
-                <Text
-                  width="100%"
-                  textAlign="left"
+                paddingX="8px"
                 >
-                  {card.title}
-                </Text>
-                <AccordionIcon />
-              </AccordionButton>
+                <DragHandleIcon
+                  marginRight="8px"
+                  boxSize="12px"
+                  color="gray.600"
+                />
+                <AccordionButton
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  paddingY="16px"
+                  paddingX="0"
+                >
+                  <Text
+                    width="100%"
+                    textAlign="left"
+                  >
+                    {card.title}
+                  </Text>
+                  <AccordionIcon
+                    color="gray.600"
+                  />
+                </AccordionButton>
+              </Flex>
               <AccordionPanel>
                 <Stack
                   spacing="0"
