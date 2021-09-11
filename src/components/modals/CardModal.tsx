@@ -1,27 +1,16 @@
-import { DeleteIcon } from "@chakra-ui/icons";
-import { Button, Checkbox, FormControl, FormErrorMessage, FormLabel, Grid, HStack, IconButton, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack } from "@chakra-ui/react";
+import { Button, FormControl, FormErrorMessage, FormLabel, Grid, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { v4 } from "uuid";
 
-import { emptyCard } from "../../data/initialData";
 import { useBoard } from "../../hooks/useBoard";
 import { useModal } from "../../hooks/useModal";
 import { ICard, ITask } from "../../types/IBoard";
-
-interface IEditCardProps {
-  title?: string,
-  statusId?: string,
-};
-
-interface IEditTaskProps {
-  id: string,
-  title?: string,
-  isDone?: boolean,
-};
+import { TaskInput } from "../ui/TaskInput";
 
 export function CreateCardModal() {
-  const [card, setCard] = useState<ICard>(emptyCard);
+  const [title, setTitle] = useState('');
+  const [statusId, setStatusId] = useState('1');
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [titleError, setTitleError] = useState(false);
 
@@ -30,19 +19,11 @@ export function CreateCardModal() {
 
   useEffect(() => {
     if (editCard) {
-      setCard(editCard);
+      setTitle(editCard.title);
+      setStatusId(editCard.statusId);
       setTasks(editCard.tasks);
-    };
+    }
   }, [editCard]);
-
-  function handleEditCard({ title, statusId }: IEditCardProps) {
-    const newCard = {
-      ...card,
-      title: title ? title : card.title,
-      statusId: statusId ? statusId : card.statusId,
-    };
-    setCard(newCard);
-  };
 
   function handleAddTask() {
     const newTask = {
@@ -54,64 +35,65 @@ export function CreateCardModal() {
     setTasks(newTasks);
   };
 
-  function handleRemoveTask(id: string) {
-    const newTasks = tasks.filter((task) => task.id !== id);
-    setTasks(newTasks);
-  };
-
-  function handleEditTask({ id, title, isDone }: IEditTaskProps) {
-    const myTask = tasks.find((task) => task.id === id);
-    if (!myTask) return;
-    const newTask = {
-      ...myTask,
-      title: title ? title : myTask.title,
-      isDone: isDone ? isDone : myTask.isDone,
-    };
+  function handleUpdateTask(newTask: ITask) {
     const newTasks = tasks.map((task) => {
-      if (task.id === id) return newTask;
+      if (task.id === newTask.id) return newTask;
       else return task;
     });
     setTasks(newTasks);
   };
 
+  function handleRemoveTask(id: string) {
+    const newTasks = tasks.filter((task) => task.id !== id);
+    setTasks(newTasks);
+  };
+
   function handleCloseModal() {
     setEditCard();
-    setCard(emptyCard);
+    setTitle('');
+    setStatusId('1');
     setTasks([]);
     toggleCardModal();
   };
 
   function handleSubmitCreateCard() {
-    if (!card.title) {
+    if (!title) {
       setTitleError(true);
       return;
     };
     setTitleError(false);
-    const newCard = {
-      ...card,
+    const myTasks = tasks.filter((task) => task.title !== '');
+    const newCard: ICard = {
       id: v4(),
-      tasks,
+      title,
+      statusId,
+      tasks: myTasks,
     }
     createCard(newCard);
     handleCloseModal();
   };
 
-  function handleSubmitEditCard() {
-    if (!card.title) {
+  function handleSubmitUpdateTask() {
+    if (!editCard) return;
+    if (!title) {
       setTitleError(true);
       return;
     };
     setTitleError(false);
-    const newCard = {
-      ...card,
-      tasks,
+    const myTasks = tasks.filter((task) => task.title !== '');
+    const newCard: ICard = {
+      id: editCard.id,
+      title,
+      statusId,
+      tasks: myTasks,
     };
     updateCard(newCard);
     handleCloseModal();
   };
 
   function handleSubmitDeleteCard() {
-    deleteCard(card.id);
+    if (!editCard) return;
+    deleteCard(editCard.id);
     handleCloseModal();
   };
 
@@ -149,8 +131,8 @@ export function CreateCardModal() {
                   placeholder="Card Title"
                   variant="filled"
                   autoFocus
-                  value={card.title}
-                  onChange={(event) => handleEditCard({ title: event.target.value })}
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
                 />
                 <FormErrorMessage>
                   Card needs a title.
@@ -165,8 +147,8 @@ export function CreateCardModal() {
                 <Select
                   variant="filled"
                   textTransform="capitalize"
-                  value={card.statusId}
-                  onChange={(event) => handleEditCard({ statusId: event.currentTarget.value })}
+                  value={statusId}
+                  onChange={(event) => setStatusId(event.currentTarget.value)}
                 >
                   {board.statuses.map((status) => (
                     <option
@@ -187,29 +169,12 @@ export function CreateCardModal() {
                 marginBottom={tasks.length > 0 ? '16px' : '0'}
               >
                 {tasks.map((task) => (
-                  <HStack
-                    spacing="8px"
+                  <TaskInput
                     key={task.id}
-                  >
-                    <Checkbox
-                      colorScheme="green"
-                      isChecked={task.isDone}
-                      onChange={() => handleEditTask({ id: task.id, isDone: !task.isDone })}
-                    />
-                    <Input
-                      variant="filled"
-                      placeholder="Task"
-                      size="sm"
-                      value={task.title}
-                      onChange={(event) => handleEditTask({ id: task.id, title: event.target.value })}
-                    />
-                    <IconButton
-                      size="xs"
-                      aria-label="Remove Task"
-                      icon={<DeleteIcon />}
-                      onClick={() => handleRemoveTask(task.id)}
-                    />
-                  </HStack>
+                    task={task}
+                    updateTask={handleUpdateTask}
+                    removeTask={handleRemoveTask}
+                  />
                 ))}
               </Stack>
               <Button
@@ -232,7 +197,7 @@ export function CreateCardModal() {
             </Button>
             <Button
               colorScheme="green"
-              onClick={() => handleSubmitEditCard()}
+              onClick={() => handleSubmitUpdateTask()}
             >
               Save
             </Button>

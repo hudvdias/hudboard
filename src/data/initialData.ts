@@ -1,4 +1,4 @@
-import { IBoard, ICard, IStatus } from "../types/IBoard";
+import { IBoard, IStatus } from "../types/IBoard";
 
 export const emptyBoard: IBoard = {
   id: '',
@@ -38,10 +38,3 @@ export const initialStatuses: IStatus[] = [
     cards: [],
   },
 ];
-
-export const emptyCard: ICard = {
-  id: '',
-  title: '',
-  statusId: '1', //draft
-  tasks: [],
-};
