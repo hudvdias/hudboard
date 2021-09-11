@@ -7,8 +7,10 @@ import { IProviderProps } from "./AppProvider";
 interface IModalContextProps {
   isStartModalOpen: boolean,
   isCardModalOpen: boolean,
+  isDeleteCardAlertOpen: boolean,
   toggleStartModal: () => void,
   toggleCardModal: () => void,
+  toggleDeleteCardAlert: () => void,
 };
 
 const ModalContext = createContext<IModalContextProps>({} as IModalContextProps);
@@ -16,15 +18,18 @@ const ModalContext = createContext<IModalContextProps>({} as IModalContextProps)
 export function ModalProvider({ children }: IProviderProps) {
   const [ isStartModalOpen, setIsStartModalOpen ] = useState(false);
   const [ isCardModalOpen, setIsCardModalOpen ] = useState(false);
+  const [ isDeleteCardAlertOpen, setIsDeleteCardAlertOpen ] = useState(false);
 
   function toggleStartModal() {
     setIsStartModalOpen(!isStartModalOpen);
-    return;
   };
 
   function toggleCardModal() {
     setIsCardModalOpen(!isCardModalOpen);
-    return;
+  };
+
+  function toggleDeleteCardAlert() {
+    setIsDeleteCardAlertOpen(!isDeleteCardAlertOpen);
   };
 
   return (
@@ -32,8 +37,10 @@ export function ModalProvider({ children }: IProviderProps) {
       value={{
         isStartModalOpen,
         isCardModalOpen,
+        isDeleteCardAlertOpen,
         toggleStartModal,
         toggleCardModal,
+        toggleDeleteCardAlert,
       }}
     >
       {children}

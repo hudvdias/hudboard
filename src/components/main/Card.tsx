@@ -85,15 +85,17 @@ export function Card({ card, index }: ICardProps) {
                     >
                       {card.title}
                     </Text>
-                    <Text
-                      fontSize="xs"
-                      color={taskCounter.done === taskCounter.total ? "green.600" : "gray.500"}
-                      marginLeft="16px"
-                      marginRight="8px"
-                      lineHeight={1}
-                    >
-                      {taskCounter.done}/{taskCounter.total}
-                    </Text>
+                    {card.tasks.length > 0 && (
+                      <Text
+                        fontSize="xs"
+                        color={taskCounter.done === taskCounter.total ? "green.600" : "gray.500"}
+                        marginLeft="16px"
+                        marginRight="8px"
+                        lineHeight={1}
+                      >
+                        {taskCounter.done}/{taskCounter.total}
+                      </Text>
+                    )}
                   </Flex>
                   <AccordionIcon
                     color="gray.600"

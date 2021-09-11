@@ -26,6 +26,7 @@ import { useBoard } from "../../hooks/useBoard";
 import { useModal } from "../../hooks/useModal";
 import { ICard, ITask } from "../../types/IBoard";
 import { TaskInput } from "../ui/TaskInput";
+import { DeleteCardAlert } from "../ui/DeleteCardAlert";
 
 export function CreateCardModal() {
   const [title, setTitle] = useState('');
@@ -36,8 +37,8 @@ export function CreateCardModal() {
   const [titleError, setTitleError] = useState(false);
   const [shownEmojiPicker, setShownEmojiPicker] = useState(false);
 
-  const { isCardModalOpen, toggleCardModal } = useModal();
-  const { board, createCard, updateCard, deleteCard, editCard, setEditCard } = useBoard();
+  const { isCardModalOpen, toggleCardModal, toggleDeleteCardAlert } = useModal();
+  const { board, createCard, updateCard, editCard, setEditCard } = useBoard();
 
   useEffect(() => {
     if (editCard) {
@@ -121,8 +122,7 @@ export function CreateCardModal() {
 
   function handleSubmitDeleteCard() {
     if (!editCard) return;
-    deleteCard(editCard.id);
-    handleCloseModal();
+    toggleDeleteCardAlert();
   };
 
   function handleOnDragEnd(result: DropResult) {
@@ -318,6 +318,11 @@ export function CreateCardModal() {
           </ModalFooter>
         )}
       </ModalContent>
+      {editCard && (
+        <DeleteCardAlert
+          cardId={editCard.id}
+        />
+      )}
     </Modal>
   );
 };
