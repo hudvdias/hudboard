@@ -1,6 +1,7 @@
 import { Button, FormControl, FormErrorMessage, FormLabel, Grid, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useState } from "react";
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { v4 } from "uuid";
 
 import { useBoard } from "../../hooks/useBoard";
@@ -97,6 +98,15 @@ export function CreateCardModal() {
     handleCloseModal();
   };
 
+  function handleOnDragEnd(result: DropResult) {
+    if (!result.destination) return;
+    if (result.destination.index === result.source.index) return;
+    const myTasks = tasks;
+    const [myTask] = myTasks.splice(result.source.index, 1);
+    myTasks.splice(result.destination.index, 0, myTask);
+    setTasks(myTasks);
+  };
+
   return (
     <Modal
       isOpen={isCardModalOpen}
@@ -165,18 +175,32 @@ export function CreateCardModal() {
               <FormLabel>
                 Tasks
               </FormLabel>
-              <Stack
-                marginBottom={tasks.length > 0 ? '16px' : '0'}
+              <DragDropContext
+                onDragEnd={(result) =>handleOnDragEnd(result)}
               >
-                {tasks.map((task) => (
-                  <TaskInput
-                    key={task.id}
-                    task={task}
-                    updateTask={handleUpdateTask}
-                    removeTask={handleRemoveTask}
-                  />
-                ))}
-              </Stack>
+                <Droppable
+                  droppableId={'cardModalTasks'}
+                >
+                  {(droppableProvided) => (
+                    <Stack
+                      marginBottom={tasks.length > 0 ? '16px' : '0'}
+                      ref={droppableProvided.innerRef}
+                      {...droppableProvided.droppableProps}
+                    >
+                      {tasks.map((task, index) => (
+                        <TaskInput
+                          key={task.id}
+                          task={task}
+                          index={index}
+                          updateTask={handleUpdateTask}
+                          removeTask={handleRemoveTask}
+                        />
+                      ))}
+                      {droppableProvided.placeholder}
+                    </Stack>
+                  )}
+                </Droppable>
+              </DragDropContext>
               <Button
                 size="sm"
                 onClick={() => handleAddTask()}

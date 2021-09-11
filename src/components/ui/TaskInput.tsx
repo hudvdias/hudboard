@@ -1,16 +1,18 @@
-import { DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon, DragHandleIcon } from "@chakra-ui/icons";
 import { Checkbox, HStack, IconButton, Input } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useState } from "react";
+import { Draggable } from "react-beautiful-dnd";
 import { ITask } from "../../types/IBoard";
 
 interface ITaskInputProps {
   task: ITask,
+  index: number,
   updateTask: (task: ITask) => void,
   removeTask: (id: string) => void,
 };
 
-export function TaskInput({ task, updateTask, removeTask }: ITaskInputProps) {
+export function TaskInput({ task, index, updateTask, removeTask }: ITaskInputProps) {
   const [title, setTitle] = useState('');
   const [isDone, setIsDone] = useState(false);
 
@@ -31,30 +33,44 @@ export function TaskInput({ task, updateTask, removeTask }: ITaskInputProps) {
   }, [title, isDone]);
 
   return (
-    <HStack
-      spacing="8px"
+    <Draggable
+     draggableId={task.id}
+     index={index}
     >
-      <Checkbox
-        colorScheme="green"
-        isChecked={isDone}
-        onChange={() => setIsDone(!isDone)}
-      />
-      <Input
-        variant="filled"
-        placeholder="Task"
-        size="sm"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-        fontStyle={isDone ? 'italic' : ''}
-        color={isDone ? 'gray.500' : ''}
-        textDecoration={isDone ? 'line-through' : ''}
-      />
-      <IconButton
-        size="xs"
-        aria-label="Remove Task"
-        icon={<DeleteIcon />}
-        onClick={() => removeTask(task.id)}
-      />
-    </HStack>
+      {(DraggableProvided) => (
+        <HStack
+          spacing="8px"
+          {...DraggableProvided.draggableProps}
+          {...DraggableProvided.dragHandleProps}
+          ref={DraggableProvided.innerRef}
+        >
+          <DragHandleIcon
+            boxSize="12px"
+            color="gray.600"
+          />
+          <Checkbox
+            colorScheme="green"
+            isChecked={isDone}
+            onChange={() => setIsDone(!isDone)}
+          />
+          <Input
+            variant="filled"
+            placeholder="Task"
+            size="sm"
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            fontStyle={isDone ? 'italic' : ''}
+            color={isDone ? 'gray.500' : ''}
+            textDecoration={isDone ? 'line-through' : ''}
+          />
+          <IconButton
+            size="xs"
+            aria-label="Remove Task"
+            icon={<DeleteIcon />}
+            onClick={() => removeTask(task.id)}
+          />
+        </HStack>
+      )}
+    </Draggable>
   );
 };
