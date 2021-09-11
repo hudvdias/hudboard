@@ -1,7 +1,7 @@
-import { Button, Divider, Flex, FormLabel, Heading, Input, Modal, ModalBody, ModalContent, ModalOverlay } from "@chakra-ui/react";
 import { useState } from "react";
-import { useBoard } from "../../hooks/useBoard";
+import { Button, Divider, Flex, FormLabel, Heading, Input, Modal, ModalBody, ModalContent, ModalOverlay } from "@chakra-ui/react";
 
+import { useBoard } from "../../hooks/useBoard";
 import { useModal } from "../../hooks/useModal";
 
 export function StartModal() {

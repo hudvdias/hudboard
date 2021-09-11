@@ -1,7 +1,7 @@
+import { useEffect, useState } from "react";
 import { Flex, Stack } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { useState } from "react";
 import { Droppable } from "react-beautiful-dnd";
+
 import { ICard, IStatus } from "../../types/IBoard";
 import { ColumnHeader } from "../ui/ColumnHeader";
 import { Card } from "./Card";

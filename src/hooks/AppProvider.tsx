@@ -1,5 +1,6 @@
 import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
+
 import { theme } from "../styles/theme";
 import { BoardProvider } from "./useBoard";
 import { ModalProvider } from "./useModal";

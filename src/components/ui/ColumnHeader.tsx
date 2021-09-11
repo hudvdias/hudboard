@@ -1,4 +1,5 @@
 import { Flex, Tag, Text } from "@chakra-ui/react";
+
 import { IStatus } from "../../types/IBoard";
 
 interface IColumnHeaderProps {

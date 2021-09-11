@@ -1,7 +1,7 @@
 import { Grid } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
+
 import { useBoard } from "../../hooks/useBoard";
 import { IStatus } from "../../types/IBoard";
 import { Column } from "./Column";

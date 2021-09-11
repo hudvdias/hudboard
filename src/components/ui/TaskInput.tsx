@@ -1,8 +1,8 @@
-import { DeleteIcon, DragHandleIcon } from "@chakra-ui/icons";
+import { useEffect, useState } from "react";
 import { Checkbox, HStack, IconButton, Input } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { useState } from "react";
+import { DeleteIcon, DragHandleIcon } from "@chakra-ui/icons";
 import { Draggable } from "react-beautiful-dnd";
+
 import { ITask } from "../../types/IBoard";
 
 interface ITaskInputProps {

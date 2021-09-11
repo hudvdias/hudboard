@@ -1,9 +1,26 @@
-import { Button, Flex, FormControl, FormErrorMessage, FormLabel, Grid, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack, Text } from "@chakra-ui/react";
-import EmojiPicker, { IEmojiData } from "emoji-picker-react";
-import { useEffect } from "react";
-import { useState } from "react";
-import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
+import { useEffect,useState } from "react";
+import {
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Grid,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  Stack, 
+  Text }
+from "@chakra-ui/react";
 import { v4 } from "uuid";
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
+import EmojiPicker, { IEmojiData } from "emoji-picker-react";
 
 import { useBoard } from "../../hooks/useBoard";
 import { useModal } from "../../hooks/useModal";

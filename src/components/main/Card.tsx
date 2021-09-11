@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Checkbox, Flex, IconButton, Stack, Text } from "@chakra-ui/react";
+import { DragHandleIcon, EditIcon } from "@chakra-ui/icons";
+import { Draggable } from "react-beautiful-dnd";
 
 import { ICard, ITask } from "../../types/IBoard";
-import { DragHandleIcon, EditIcon } from "@chakra-ui/icons";
 import { useBoard } from "../../hooks/useBoard";
 import { useModal } from "../../hooks/useModal";
-import { Draggable } from "react-beautiful-dnd";
 
 interface ICardProps {
   card: ICard,
