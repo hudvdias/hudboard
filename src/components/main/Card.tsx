@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Checkbox, Flex, IconButton, Stack, Text } from "@chakra-ui/react";
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Checkbox, Flex, IconButton, Spinner, Stack, Text, useToast } from "@chakra-ui/react";
 import { DragHandleIcon, EditIcon } from "@chakra-ui/icons";
 import { Draggable } from "react-beautiful-dnd";
 
@@ -16,8 +16,11 @@ export function Card({ card, index }: ICardProps) {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [taskCounter, setTaskCounter] = useState({ done: 0, total: 0 });
 
+  const [taskToggleLoading, setTaskToggleLoading] = useState(false);
+
   const { setEditCard, toggleTask } = useBoard();
   const { toggleCardModal } = useModal();
+  const toast = useToast();
 
   useEffect(() => {
     setTasks(card.tasks);
@@ -30,6 +33,23 @@ export function Card({ card, index }: ICardProps) {
   function handleEditCard() {
     setEditCard(card);
     toggleCardModal();
+  };
+
+  async function handleToggleTask(id: string) {
+    setTaskToggleLoading(true);
+    try {
+      await toggleTask(id);
+    } catch (error) {
+      toast({
+        status: 'error',
+        title: 'Could not update task.',
+        description: 'Try again later or verify your connection.',
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'left-accent',
+      });
+    };
+    setTaskToggleLoading(false);
   };
 
   return (
@@ -105,19 +125,32 @@ export function Card({ card, index }: ICardProps) {
               </Flex>
               <AccordionPanel>
                 <Stack
+                  position="relative"
                   spacing="0"
                   marginBottom={tasks.length > 0 ? '16px' : '0'}
                 >
+                  {taskToggleLoading && (
+                    <Flex
+                      position="absolute"
+                      justifyContent="center"
+                      alignItems="center"
+                      width="100%"
+                      height="100%"
+                    >
+                      <Spinner size="lg" />
+                    </Flex>
+                  )}
                   {tasks.map((task) => (
                     <Checkbox
                       key={task.id}
                       colorScheme="green"
                       size="sm"
                       isChecked={task.isDone}
-                      onChange={() => toggleTask(task.id)}
+                      onChange={() => handleToggleTask(task.id)}
                       textColor={task.isDone ? 'gray.500' : ''}
                       textDecoration={task.isDone ? 'line-through' : ''}
                       fontStyle={task.isDone ? 'italic' : ''}
+                      opacity={taskToggleLoading ? '0.25' : ''}
                     >
                       {task.title}
                     </Checkbox>
