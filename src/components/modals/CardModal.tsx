@@ -6,6 +6,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Grid,
+  IconButton,
   Input,
   Modal,
   ModalBody,
@@ -28,6 +29,7 @@ import { useModal } from "../../hooks/useModal";
 import { ICard, ITask } from "../../types/IBoard";
 import { TaskInput } from "../ui/TaskInput";
 import { DeleteCardAlert } from "../ui/DeleteCardAlert";
+import { DeleteIcon } from "@chakra-ui/icons";
 
 export function CreateCardModal() {
   const [title, setTitle] = useState('');
@@ -251,37 +253,47 @@ export function CreateCardModal() {
                 <FormLabel>
                   Icon
                 </FormLabel>
-                <Text
-                  color="gray.500"
-                  marginBottom="16px"
+                <Flex
+                  alignItems="center"
                 >
                   {icon ? (
-                    icon
-                  ) : (
-                    'No icon.'
-                  )}
-                </Text>
-                <Flex>
-                  <Button
-                    size="sm"
-                    onClick={() => setShownEmojiPicker(!shownEmojiPicker)}
-                  >
-                    {icon ? (
-                      'Change Icon'
-                    ) : (
-                      'Chose Icon'
-                    )}
-                  </Button>
-                  {icon && (
-                    <Button
-                      colorScheme="red"
-                      size="sm"
-                      onClick={() => setIcon('')}
-                      marginLeft="8px"
+                    <Text
+                      fontSize="4xl"
                     >
-                      Remove Icon
-                    </Button>
+                      {icon}
+                    </Text>
+                  ) : (
+                    <Text
+                      color="gray.500"
+                      fontSize="sm"
+                    >
+                      No icon.
+                    </Text>
                   )}
+                  <Flex
+                    marginLeft="auto"
+                    alignItems="center"
+                  >
+                    <Button
+                      size="sm"
+                      onClick={() => setShownEmojiPicker(!shownEmojiPicker)}
+                    >
+                      {icon ? (
+                        'Change'
+                      ) : (
+                        'Chose Icon'
+                      )}
+                    </Button>
+                    {icon && (
+                      <IconButton
+                        aria-label="Remove Icon"
+                        size="sm"
+                        marginLeft="8px"
+                        icon={<DeleteIcon />}
+                        onClick={() => setIcon('')}
+                      />
+                    )}
+                  </Flex>
                 </Flex>
                 {shownEmojiPicker && (
                   <EmojiPicker
