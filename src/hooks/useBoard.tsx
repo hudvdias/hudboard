@@ -11,8 +11,8 @@ import { useModal } from "./useModal";
 interface IBoardContextProps {
   board: IBoard,
   editCard: ICard | undefined,
-  createBoard: (name: string) => Promise<string | undefined>,
-  loadBoard: (id: string) => Promise<string | undefined>,
+  createBoard: (name: string) => Promise<void>,
+  loadBoard: (id: string) => Promise<void>,
   updateStatuses: (statuses: IStatus[]) => Promise<void>,
   createCard: (card: ICard) => Promise<void>,
   updateCard: (card: ICard) => Promise<void>,
@@ -42,14 +42,14 @@ export function BoardProvider({ children }: IProviderProps) {
   async function createBoard(name: string) {
     const newBoard = { id: v4(), name, statuses: initialStatuses };
     try {
-      await api.post('creates-board', newBoard);
+      await api.post('create-board', newBoard);
     } catch (error) {
       console.log(error);
-      return;
+      throw error;
     };
     localStorage.setItem("@hudboard:id", newBoard.id);
     setBoard(newBoard);
-    return newBoard.id;
+    return;
   };
 
   async function loadBoard(id: string) {
@@ -62,10 +62,9 @@ export function BoardProvider({ children }: IProviderProps) {
         statuses: response.data.statuses,
       };
       setBoard(newBoard);
-      return newBoard.id;
     } catch (error) {
       console.log(error);
-      return;
+      throw error;
     };
   };
 
@@ -76,10 +75,11 @@ export function BoardProvider({ children }: IProviderProps) {
     };
     try {
       await api.post('/edit-board', newBoard);
-      setBoard(newBoard);
     } catch (error) {
       console.log(error);
+      throw error;
     };
+    setBoard(newBoard);
   };
 
   async function createCard(newCard: ICard) {
@@ -92,10 +92,11 @@ export function BoardProvider({ children }: IProviderProps) {
     };
     try {
       await api.post('/edit-board', newBoard);
-      setBoard(newBoard);
     } catch (error) {
       console.log(error);
+      throw error;
     };
+    setBoard(newBoard);
   };
 
   async function updateCard(newCard: ICard) {
@@ -122,10 +123,11 @@ export function BoardProvider({ children }: IProviderProps) {
     };
     try {
       await api.post('/edit-board', newBoard);
-      setBoard(newBoard);
     } catch (error) {
       console.log(error);
+      throw error;
     };
+    setBoard(newBoard);
   };
 
   async function deleteCard(cardId: string) {
@@ -138,10 +140,11 @@ export function BoardProvider({ children }: IProviderProps) {
     };
     try {
       await api.post('/edit-board', newBoard);
-      setBoard(newBoard);
     } catch (error) {
       console.log(error);
+      throw error;
     };
+    setBoard(newBoard);
   };
 
   async function toggleTask(taskId: string) {
@@ -164,10 +167,11 @@ export function BoardProvider({ children }: IProviderProps) {
     };
     try {
       await api.post('/edit-board', newBoard);
-      setBoard(newBoard);
     } catch (error) {
       console.log(error);
+      throw error;
     };
+    setBoard(newBoard);
   };
 
   return (

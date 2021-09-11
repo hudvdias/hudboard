@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, Heading, Text } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertIcon, AlertTitle, Button, Text } from "@chakra-ui/react";
 
 import { useModal } from "../../hooks/useModal";
 import { useBoard } from "../../hooks/useBoard";
@@ -18,25 +18,38 @@ export function CreateBoardAlert() {
       isOpen={isCreateBoardAlertOpen}
       leastDestructiveRef={cancelRef}
       onClose={() => toggleCreateBoardAlert()}
-      size="lg"
+      size="xl"
       closeOnOverlayClick={false}
       closeOnEsc={false}
     >
       <AlertDialogOverlay>
         <AlertDialogContent>
-          <AlertDialogHeader>
-            Board Created
-          </AlertDialogHeader>
+          <AlertDialogHeader />
           <AlertDialogBody>
-            <Heading
-              size="md"
+            <Text
+              fontSize="xl"
+              fontWeight="700"
+              marginBottom="16px"
             >
-              Board ID: {board.id}
-            </Heading>
+              Your Board has been created!
+            </Text>
+            <Alert
+              status="info"
+              variant="solid"
+            >
+              <AlertIcon />
+              <AlertTitle>
+                Board ID:
+              </AlertTitle>
+              <AlertDescription>
+                {board.id}
+              </AlertDescription>
+            </Alert>
             <Text
               marginTop="16px"
+              fontSize="sm"
             >
-              Please, save your board id in a secure place and use it to load your board anywhere!
+              Please, save your Board ID in a secure place and use it to load your board anywhere!
             </Text>
           </AlertDialogBody>
           <AlertDialogFooter>

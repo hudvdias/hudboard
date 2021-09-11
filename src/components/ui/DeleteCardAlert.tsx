@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button } from "@chakra-ui/react";
+import { useRef, useState } from "react";
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, useToast } from "@chakra-ui/react";
 
 import { useModal } from "../../hooks/useModal";
 import { useBoard } from "../../hooks/useBoard";
@@ -9,14 +9,37 @@ interface IDeleteCardAlertProps {
 };
 
 export function DeleteCardAlert({ cardId }: IDeleteCardAlertProps) {
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const cancelRef = useRef(null);
   const { isDeleteCardAlertOpen, toggleDeleteCardAlert, toggleCardModal } = useModal();
   const { deleteCard } = useBoard();
+  const toast = useToast();
 
-  function handleConfirmDelete() {
-    deleteCard(cardId);
-    toggleDeleteCardAlert();
-    toggleCardModal();
+  async function handleConfirmDelete() {
+    setDeleteLoading(true);
+    try {
+      await deleteCard(cardId);
+      toggleDeleteCardAlert();
+      toggleCardModal();
+      toast({
+        status: 'success',
+        description: 'Your card has been deleted.',
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'left-accent',
+      });
+    } catch (error) {
+      toast({
+        status: 'error',
+        title: 'Could not delete card.',
+        description: 'Try again later or verify your connection.',
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'left-accent',
+      });
+    }
+    setDeleteLoading(false);
   };
 
   return (
@@ -44,6 +67,7 @@ export function DeleteCardAlert({ cardId }: IDeleteCardAlertProps) {
             <Button
               colorScheme="red"
               onClick={() => handleConfirmDelete()}
+              isLoading={deleteLoading}
             >
               Delete
             </Button>

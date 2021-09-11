@@ -24,11 +24,22 @@ export function StartModal() {
     };
     setNameError(false);
     setCreateLoading(true);
-    const myBoardId = await createBoard(name);
-    if (myBoardId) {
-      toggleCreateBoardAlert();
-      toggleStartModal();
-    };
+    try {
+      await createBoard(name);
+    } catch (error) {
+      toast({
+        title: 'Could not create board.',
+        description: "Please try again later or verify your connection.",
+        isClosable: true,
+        position: 'bottom-left',
+        status: 'error',
+        variant: 'left-accent'
+      });
+      setCreateLoading(false);
+      return;
+    }
+    toggleCreateBoardAlert();
+    toggleStartModal();
     setCreateLoading(false);
   };
 
@@ -39,25 +50,27 @@ export function StartModal() {
     };
     setIdError(false);
     setLoading(true);
-    const myBoardId = await loadBoard(id);
-    if (myBoardId) {
-      toggleStartModal();
+    try {
+      await loadBoard(id);
+    } catch (error) {
       toast({
-        title: 'Success',
-        description: 'Board loaded successfully!',
-        isClosable: true,
-        position: 'top',
-        status: 'success',
-      });
-    } else {
-      toast({
-        title: 'Error',
         description: 'Board not found.',
         isClosable: true,
-        position: 'top',
+        position: 'bottom-left',
         status: 'error',
+        variant: 'left-accent'
       });
+      setLoading(false);
+      return;
     };
+    toggleStartModal();
+    toast({
+      description: 'Your board has been loaded!',
+      isClosable: true,
+      position: 'bottom-left',
+      status: 'success',
+      variant: 'left-accent',
+    });
     setLoading(false);
   };
 

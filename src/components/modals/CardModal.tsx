@@ -16,7 +16,8 @@ import {
   ModalOverlay,
   Select,
   Stack, 
-  Text }
+  Text, 
+  useToast}
 from "@chakra-ui/react";
 import { v4 } from "uuid";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
@@ -36,9 +37,12 @@ export function CreateCardModal() {
 
   const [titleError, setTitleError] = useState(false);
   const [shownEmojiPicker, setShownEmojiPicker] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   const { isCardModalOpen, toggleCardModal, toggleDeleteCardAlert } = useModal();
   const { board, createCard, updateCard, editCard, setEditCard } = useBoard();
+  const toast = useToast();
 
   useEffect(() => {
     if (editCard) {
@@ -83,9 +87,11 @@ export function CreateCardModal() {
     toggleCardModal();
   };
 
-  function handleSubmitCreateCard() {
+  async function handleSubmitCreateCard() {
+    setCreateLoading(true);
     if (!title) {
       setTitleError(true);
+      setCreateLoading(false);
       return;
     };
     setTitleError(false);
@@ -97,17 +103,37 @@ export function CreateCardModal() {
       icon,
       tasks: myTasks,
     }
-    createCard(newCard);
-    handleCloseModal();
+    try {
+      await createCard(newCard);
+      toast({
+        status: 'success',
+        description: 'Your card has been created.',
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'left-accent',
+      });
+      handleCloseModal();
+    } catch (error) {
+      toast({
+        status: 'error',
+        title: 'Could not create card.',
+        description: 'Try again later or verify your connection.',
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'left-accent',
+      });
+    }
+    setCreateLoading(false);
   };
 
-  function handleSubmitUpdateCard() {
+  async function handleSubmitUpdateCard() {
     if (!editCard) return;
     if (!title) {
       setTitleError(true);
       return;
     };
     setTitleError(false);
+    setUpdateLoading(true);
     const myTasks = tasks.filter((task) => task.title !== '');
     const newCard: ICard = {
       id: editCard.id,
@@ -116,8 +142,27 @@ export function CreateCardModal() {
       icon,
       tasks: myTasks,
     };
-    updateCard(newCard);
-    handleCloseModal();
+    try {
+      await updateCard(newCard);
+      toast({
+        status: 'success',
+        description: 'Your card has been updated.',
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'left-accent',
+      });
+      handleCloseModal();
+    } catch (error) {
+      toast({
+        status: 'error',
+        title: 'Could not update card.',
+        description: 'Try again later or verify your connection.',
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'left-accent',
+      });
+    }
+    setUpdateLoading(false);
   };
 
   function handleSubmitDeleteCard() {
@@ -303,6 +348,7 @@ export function CreateCardModal() {
             <Button
               colorScheme="green"
               onClick={() => handleSubmitUpdateCard()}
+              isLoading={updateLoading}
             >
               Save
             </Button>
@@ -312,6 +358,7 @@ export function CreateCardModal() {
             <Button
               colorScheme="blue"
               onClick={() => handleSubmitCreateCard()}
+              isLoading={createLoading}
             >
               Create Card
             </Button>
