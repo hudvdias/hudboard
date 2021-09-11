@@ -87,7 +87,7 @@ export function Card({ card, index }: ICardProps) {
                     </Text>
                     <Text
                       fontSize="xs"
-                      color="gray.500"
+                      color={taskCounter.done === taskCounter.total ? "green.600" : "gray.500"}
                       marginLeft="16px"
                       marginRight="8px"
                       lineHeight={1}
