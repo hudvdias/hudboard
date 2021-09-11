@@ -14,12 +14,17 @@ interface ICardProps {
 
 export function Card({ card, index }: ICardProps) {
   const [tasks, setTasks] = useState<ITask[]>([]);
+  const [taskCounter, setTaskCounter] = useState({ done: 0, total: 0 });
 
   const { setEditCard, toggleTask } = useBoard();
   const { toggleCardModal } = useModal();
 
   useEffect(() => {
     setTasks(card.tasks);
+    setTaskCounter({
+      done: card.tasks.filter(task => task.isDone === true).length,
+      total: card.tasks.length,
+    });
   }, [card]);
 
   function handleEditCard() {
@@ -43,7 +48,8 @@ export function Card({ card, index }: ICardProps) {
           {...cardProvided.dragHandleProps}
         >
           <Accordion
-            allowToggle
+            allowToggle={card.statusId === '4' ? false : true}
+            defaultIndex={card.statusId === '4' ? 0 : undefined}
           >
             <AccordionItem
               border="none"
@@ -64,14 +70,34 @@ export function Card({ card, index }: ICardProps) {
                   paddingY="16px"
                   paddingX="0"
                 >
-                  <Text
-                    width="100%"
-                    textAlign="left"
+                  <Flex
+                    alignItems="center"
                   >
-                    {card.title}
-                  </Text>
+                    {card.icon && (
+                      <Text
+                        marginRight="8px"
+                      >
+                        {card.icon}
+                      </Text>
+                    )}
+                    <Text
+                      textAlign="left"
+                    >
+                      {card.title}
+                    </Text>
+                    <Text
+                      fontSize="xs"
+                      color="gray.500"
+                      marginLeft="16px"
+                      marginRight="8px"
+                      lineHeight={1}
+                    >
+                      {taskCounter.done}/{taskCounter.total}
+                    </Text>
+                  </Flex>
                   <AccordionIcon
                     color="gray.600"
+                    display={card.statusId === '4' ? 'none' : ''}
                   />
                 </AccordionButton>
               </Flex>

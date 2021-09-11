@@ -25,17 +25,16 @@ export function Board() {
     const endStatus = statuses.find((status) => status.id === result.destination?.droppableId);
     if (!startStatus || !endStatus) return;
     if (startStatus === endStatus) {
-      const myCards = startStatus.cards
-      const [myCard] = myCards.splice(result.source.index, 1);
-      myCards.splice(result.destination.index, 0, myCard);
-      const newStatus = { ...startStatus, cards: myCards };
+      const [myCard] = startStatus.cards.splice(result.source.index, 1);
+      startStatus.cards.splice(result.destination.index, 0, myCard);
       const newStatuses = statuses.map((status) => {
-        if (status.id === newStatus.id) return newStatus;
+        if (status.id === startStatus.id) return startStatus;
         return status;
       });
       updateStatuses(newStatuses);
     } else {
       const [myCard] = startStatus.cards.splice(result.source.index, 1);
+      myCard.statusId = endStatus.id;
       endStatus.cards.splice(result.destination.index, 0, myCard);
       const newStatuses = statuses.map((status) => {
         if (status.id === startStatus.id) return startStatus;

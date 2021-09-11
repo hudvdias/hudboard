@@ -15,6 +15,7 @@ export interface ICard {
   id: string,
   title: string,
   statusId: string,
+  icon: string,
   tasks: ITask[],
 };
 

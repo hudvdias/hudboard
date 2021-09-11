@@ -1,4 +1,5 @@
-import { Button, FormControl, FormErrorMessage, FormLabel, Grid, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack } from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormErrorMessage, FormLabel, Grid, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack, Text } from "@chakra-ui/react";
+import EmojiPicker, { IEmojiData } from "emoji-picker-react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
@@ -12,8 +13,11 @@ import { TaskInput } from "../ui/TaskInput";
 export function CreateCardModal() {
   const [title, setTitle] = useState('');
   const [statusId, setStatusId] = useState('1');
+  const [icon, setIcon] = useState('');
   const [tasks, setTasks] = useState<ITask[]>([]);
+
   const [titleError, setTitleError] = useState(false);
+  const [shownEmojiPicker, setShownEmojiPicker] = useState(false);
 
   const { isCardModalOpen, toggleCardModal } = useModal();
   const { board, createCard, updateCard, deleteCard, editCard, setEditCard } = useBoard();
@@ -22,6 +26,7 @@ export function CreateCardModal() {
     if (editCard) {
       setTitle(editCard.title);
       setStatusId(editCard.statusId);
+      setIcon(editCard.icon);
       setTasks(editCard.tasks);
     }
   }, [editCard]);
@@ -53,7 +58,10 @@ export function CreateCardModal() {
     setEditCard();
     setTitle('');
     setStatusId('1');
+    setIcon('');
     setTasks([]);
+    setTitleError(false);
+    setShownEmojiPicker(false);
     toggleCardModal();
   };
 
@@ -68,13 +76,14 @@ export function CreateCardModal() {
       id: v4(),
       title,
       statusId,
+      icon,
       tasks: myTasks,
     }
     createCard(newCard);
     handleCloseModal();
   };
 
-  function handleSubmitUpdateTask() {
+  function handleSubmitUpdateCard() {
     if (!editCard) return;
     if (!title) {
       setTitleError(true);
@@ -86,6 +95,7 @@ export function CreateCardModal() {
       id: editCard.id,
       title,
       statusId,
+      icon,
       tasks: myTasks,
     };
     updateCard(newCard);
@@ -105,6 +115,11 @@ export function CreateCardModal() {
     const [myTask] = myTasks.splice(result.source.index, 1);
     myTasks.splice(result.destination.index, 0, myTask);
     setTasks(myTasks);
+  };
+
+  function handleOnEmojiClick(emojiObject: IEmojiData) {
+    setIcon(emojiObject.emoji);
+    setShownEmojiPicker(false);
   };
 
   return (
@@ -170,6 +185,55 @@ export function CreateCardModal() {
                   ))}
                 </Select>
               </FormControl>
+              <FormControl>
+                <FormLabel>
+                  Icon
+                </FormLabel>
+                <Text
+                  color="gray.500"
+                  marginBottom="16px"
+                >
+                  {icon ? (
+                    icon
+                  ) : (
+                    'No icon.'
+                  )}
+                </Text>
+                <Flex>
+                  <Button
+                    size="sm"
+                    onClick={() => setShownEmojiPicker(!shownEmojiPicker)}
+                  >
+                    {icon ? (
+                      'Change Icon'
+                    ) : (
+                      'Chose Icon'
+                    )}
+                  </Button>
+                  {icon && (
+                    <Button
+                      colorScheme="red"
+                      size="sm"
+                      onClick={() => setIcon('')}
+                      marginLeft="8px"
+                    >
+                      Remove Icon
+                    </Button>
+                  )}
+                </Flex>
+                {shownEmojiPicker && (
+                  <EmojiPicker
+                    onEmojiClick={(event, emojiObject) => handleOnEmojiClick(emojiObject)}
+                    native
+                    pickerStyle={{
+                      position: 'absolute',
+                      marginTop: '8px',
+                      boxShadow: 'none',
+                      color: 'black',
+                    }}
+                  />
+                )}
+              </FormControl>
             </Stack>
             <FormControl>
               <FormLabel>
@@ -221,7 +285,7 @@ export function CreateCardModal() {
             </Button>
             <Button
               colorScheme="green"
-              onClick={() => handleSubmitUpdateTask()}
+              onClick={() => handleSubmitUpdateCard()}
             >
               Save
             </Button>
