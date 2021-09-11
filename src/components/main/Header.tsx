@@ -7,6 +7,10 @@ export function Header() {
   const { board } = useBoard();
   const { toggleCardModal } = useModal();
 
+  if (!board.id) return (
+    <></>
+  );
+
   return (
     <Flex
       height="104px"

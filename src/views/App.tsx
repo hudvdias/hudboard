@@ -5,6 +5,7 @@ import { Header } from "../components/main/Header";
 import { Board } from "../components/main/Board";
 import { StartModal } from "../components/modals/StartModal";
 import { CreateCardModal } from "../components/modals/CardModal";
+import { CreateBoardAlert } from "../components/ui/CreateBoardAlert";
 
 export function App() {
   return (
@@ -18,6 +19,7 @@ export function App() {
         <Header />
         <Board />
         <CreateCardModal />
+        <CreateBoardAlert />
       </Flex>
     </AppProvider>
   );

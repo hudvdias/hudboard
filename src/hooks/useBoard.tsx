@@ -42,20 +42,20 @@ export function BoardProvider({ children }: IProviderProps) {
   async function createBoard(name: string) {
     const newBoard = { id: v4(), name, statuses: initialStatuses };
     try {
-      const response = await api.post('create-board', newBoard);
-      const boardMongoId: string = response.data.insertedId.$oid;
-      localStorage.setItem("@hudboard:id", boardMongoId);
-      setBoard(newBoard);
-      return boardMongoId;
+      await api.post('creates-board', newBoard);
     } catch (error) {
       console.log(error);
+      return;
     };
+    localStorage.setItem("@hudboard:id", newBoard.id);
+    setBoard(newBoard);
+    return newBoard.id;
   };
 
   async function loadBoard(id: string) {
     try {
       const response = await api.post('load-board', { id });
-      localStorage.setItem("@hudboard:id", response.data._id.$oid);
+      localStorage.setItem("@hudboard:id", response.data.id);
       const newBoard: IBoard = {
         id: response.data.id,
         name: response.data.name,
@@ -65,6 +65,7 @@ export function BoardProvider({ children }: IProviderProps) {
       return newBoard.id;
     } catch (error) {
       console.log(error);
+      return;
     };
   };
 
