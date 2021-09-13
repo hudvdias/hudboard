@@ -37,6 +37,7 @@ export function BoardProvider({ children }: IProviderProps) {
         .catch((error) => {
           toggleStartModal();
         });
+      return;
     };
     toggleStartModal();
     // eslint-disable-next-line
