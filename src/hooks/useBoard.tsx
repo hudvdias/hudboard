@@ -32,8 +32,11 @@ export function BoardProvider({ children }: IProviderProps) {
   useEffect(() => {
     const localId = localStorage.getItem("@hudboard:id");
     if (localId) {
-      loadBoard(localId);
-      return;
+      loadBoard(localId)
+        .then()
+        .catch((error) => {
+          toggleStartModal();
+        });
     };
     toggleStartModal();
     // eslint-disable-next-line
@@ -55,6 +58,7 @@ export function BoardProvider({ children }: IProviderProps) {
   async function loadBoard(id: string) {
     try {
       const response = await api.post('load-board', { id });
+      if (!response.data) throw new Error("Board don't find.");
       localStorage.setItem("@hudboard:id", response.data.id);
       const newBoard: IBoard = {
         id: response.data.id,
