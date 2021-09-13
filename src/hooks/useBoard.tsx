@@ -34,7 +34,7 @@ export function BoardProvider({ children }: IProviderProps) {
     if (localId) {
       loadBoard(localId)
         .then()
-        .catch((error) => {
+        .catch(() => {
           toggleStartModal();
         });
       return;
