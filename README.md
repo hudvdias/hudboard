@@ -1,6 +1,6 @@
 # Hudboard
 
-My personal kanban board app.
+Aplicação de quadro Kanban.
 
 ## Projeto
 
