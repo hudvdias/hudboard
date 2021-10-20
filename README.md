@@ -1,6 +1,6 @@
 # Hudboard
 
-My personal kanban board.
+My personal kanban board app.
 
 ## Projeto
 
