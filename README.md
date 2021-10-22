@@ -1,20 +1,21 @@
-# Hudboard
+# hudboard
 
-Aplicação de quadro Kanban.
+Aplicação pessoal de quadro Kanban.
 
 ## Projeto
 
 Desenvolvi o Hudboard pra ajudar na minha organização pessoal e na habituação ao usar quadros kanban no ambiente de trabalho.
 
-## Tecnologias
+## Fundamentos
 
-- Typescript
-- React (Context API)
-- Beautiful Drag and Drop
-- Chakra UI (Design)
-- Mongo DB Web Hooks (API)
+- **React** como biblioteca principal;
+- **Context API do React** para gerenciamento de estado entre componentes;
+- **Typescript** para a escrita do código;
+- **Beautiful Drag and Drop** para a funcionalidade de "pegar e arrastar";
+- **Chakra UI** para estilização;
+- **Mongo DB Web Hooks** para consumo da API.
 
-## Funcionaldiades
+## Funcionalidades
 
 - Criação, alteração e exclusão de cards em banco de dados, via API.
 - Seleção de ícones (emojis) para os cards.
